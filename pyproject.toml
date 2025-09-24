@@ -1,0 +1,11 @@
+[project]
+name = "aad"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+prerelease = "allow"
+requires-python = ">=3.13"
+dependencies = [
+    "aviary>=0.9.10",
+    "openmdao[all]>=3.40.0",
+]
