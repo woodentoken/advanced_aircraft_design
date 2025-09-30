@@ -8,6 +8,13 @@ The course focuses on the principles and practices of designing advanced aircraf
 
 The course is taught by Dr. Christina Harvey.
 
-## Assignments completed
+# Dependencies
 
-[x] - tech quiz
+I'd recommend using a virtual environment defined by the tool `uv`, which is ideal for managing Python dependencies.
+You can install it via pip if you don't have it already:
+
+```bash
+pip install uv
+```
+
+You can find documentation for `uv` [here](https://docs.astral.sh/uv/)

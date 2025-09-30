@@ -20,10 +20,12 @@ dependencies = [
     { name = "ipdb" },
     { name = "jax" },
     { name = "jaxlib" },
+    { name = "matplotlib" },
     { name = "numpy" },
     { name = "openmdao", extra = ["all"] },
     { name = "pandas" },
     { name = "polars" },
+    { name = "scipy" },
 ]
 
 [package.metadata]
@@ -34,10 +36,12 @@ requires-dist = [
     { name = "ipdb", specifier = ">=0.13.13" },
     { name = "jax", specifier = ">=0.4.29" },
     { name = "jaxlib", specifier = "==0.4.29" },
+    { name = "matplotlib", specifier = ">=3.10.6" },
     { name = "numpy", specifier = ">=1.26.4" },
     { name = "openmdao", extras = ["all"], specifier = ">=3.40.0" },
     { name = "pandas", specifier = ">=2.3.2" },
     { name = "polars", specifier = ">=1.34.0b1" },
+    { name = "scipy", specifier = ">=1.16.2" },
 ]
 
 [[package]]
