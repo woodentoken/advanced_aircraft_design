@@ -30,7 +30,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "aviary", specifier = ">=0.9.10" },
+    { name = "aviary", directory = "Aviary" },
     { name = "dymos", specifier = ">=1.14.0" },
     { name = "icecream", specifier = ">=2.1.8" },
     { name = "ipdb", specifier = ">=0.13.13" },
@@ -173,24 +173,42 @@ wheels = [
 
 [[package]]
 name = "aviary"
-version = "0.9.10"
-source = { registry = "https://pypi.org/simple" }
+source = { directory = "Aviary" }
 dependencies = [
     { name = "dymos" },
     { name = "hvplot" },
     { name = "importlib-resources" },
     { name = "matplotlib" },
-    { name = "numpy" },
     { name = "openmdao" },
     { name = "pandas" },
     { name = "panel" },
     { name = "parameterized" },
-    { name = "simupy" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c5/94/bc7454330c0765e52c5a4cb4992733d9aa28c55657cf57535e367dbd068d/aviary-0.9.10.tar.gz", hash = "sha256:4ad7f57f4944e298dd39b10fbf0ba921e702d9a79efeddfc248e741ae8f6b45d", size = 3613466, upload-time = "2025-05-13T20:19:29.953Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/de/f2/a7fc0d82e86c09276ce69408a054f5314dac0356e43fb472da17e09ecbe7/aviary-0.9.10-py2.py3-none-any.whl", hash = "sha256:870df77dc1ff221992f0df0794624a59b9f9f4fb928fa0143357308fb5ea296c", size = 4082581, upload-time = "2025-05-13T20:19:27.557Z" },
+
+[package.metadata]
+requires-dist = [
+    { name = "ambiance", marker = "extra == 'all'" },
+    { name = "ambiance", marker = "extra == 'dev'" },
+    { name = "dymos", specifier = ">=1.14.0" },
+    { name = "hvplot" },
+    { name = "importlib-resources" },
+    { name = "itables", marker = "extra == 'all'" },
+    { name = "itables", marker = "extra == 'docs'" },
+    { name = "jupyter-book", marker = "extra == 'all'" },
+    { name = "jupyter-book", marker = "extra == 'docs'" },
+    { name = "matplotlib" },
+    { name = "openaerostruct", marker = "extra == 'all'" },
+    { name = "openaerostruct", marker = "extra == 'dev'" },
+    { name = "openmdao", specifier = ">=3.37.0" },
+    { name = "pandas" },
+    { name = "panel", specifier = ">=1.0.0" },
+    { name = "parameterized" },
+    { name = "pre-commit", marker = "extra == 'all'" },
+    { name = "pre-commit", marker = "extra == 'dev'" },
+    { name = "testflo", marker = "extra == 'all'" },
+    { name = "testflo", marker = "extra == 'dev'" },
 ]
+provides-extras = ["all", "dev", "docs"]
 
 [[package]]
 name = "babel"
@@ -755,11 +773,12 @@ wheels = [
 
 [[package]]
 name = "holoviews"
-version = "1.22.0a0"
+version = "1.22.0a1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "bokeh" },
     { name = "colorcet" },
+    { name = "narwhals" },
     { name = "numpy" },
     { name = "packaging" },
     { name = "pandas" },
@@ -767,9 +786,9 @@ dependencies = [
     { name = "param" },
     { name = "pyviz-comms" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b9/ef/3a11bf414b189c1556ad68ec715fb3c64882a5e25caa02c439af27104cb2/holoviews-1.22.0a0.tar.gz", hash = "sha256:891b12c78ba7f9c4af58ab2c47a528c9ace5be72935772c5d0d5424f296eceb4", size = 5487540, upload-time = "2025-09-12T09:23:09.768Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/25/b1/6d0fb16dd2f18fa94d4fbee8c23f9c10f5a0c136094fb45919539dca0660/holoviews-1.22.0a1.tar.gz", hash = "sha256:3e6588c05c03dd4a82422be06eac377198db00615f03c745cf1088502be1cbca", size = 5496659, upload-time = "2025-09-29T15:13:48.88Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7f/8f/99214dc3d59d6aef171821dc8cc3dea34db8fafb962c98c34b1527a76e51/holoviews-1.22.0a0-py3-none-any.whl", hash = "sha256:31b0ef52e4f712eafbd96bad16edeed726d79b677c861100f76a0f380f01642e", size = 5921115, upload-time = "2025-09-12T09:23:07.571Z" },
+    { url = "https://files.pythonhosted.org/packages/51/1c/c6c1a7a2ceb2635fff23b12ce2df4b1778df725c1e19468f5b327c6bf056/holoviews-1.22.0a1-py3-none-any.whl", hash = "sha256:ad517aa2576d35cc311d35c078ba5577a2fe98c89a77f4712faf0cb3c14eeedd", size = 5935250, upload-time = "2025-09-29T15:13:47.057Z" },
 ]
 
 [[package]]
@@ -2650,19 +2669,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/18/5d/3bf57dcd21979b887f014ea83c24ae194cfcd12b9e0fda66b957c69d1fca/setuptools-80.9.0.tar.gz", hash = "sha256:f36b47402ecde768dbfafc46e8e4207b4360c654f1f3bb84475f0a28628fb19c", size = 1319958, upload-time = "2025-05-27T00:56:51.443Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a3/dc/17031897dae0efacfea57dfd3a82fdd2a2aeb58e0ff71b77b87e44edc772/setuptools-80.9.0-py3-none-any.whl", hash = "sha256:062d34222ad13e0cc312a4c02d73f059e86a4acbfbdea8f8f76b28c99f306922", size = 1201486, upload-time = "2025-05-27T00:56:49.664Z" },
-]
-
-[[package]]
-name = "simupy"
-version = "1.1.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "numpy" },
-    { name = "scipy" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/21/7c/1287faaf5b93b4f514b25df00fbc11b6ac8149067988444e1e2fe5333df6/simupy-1.1.2.tar.gz", hash = "sha256:aecafc1ed728fb69b82b3fa43cfcb66c1edf70352c282a1eab31816ffe6cd33e", size = 195662, upload-time = "2022-05-16T00:07:26.642Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ac/6f/a09d6939e94a5e0dd9ae639ee5884496da42a087cd2caee92ab6a09818f5/simupy-1.1.2-py3-none-any.whl", hash = "sha256:7a6bed0ce7dc4e043b9ceb3ee823b7e4692afe56e1b6c2d63d008c63fc9878ae", size = 42588, upload-time = "2022-05-16T00:07:22.331Z" },
 ]
 
 [[package]]
