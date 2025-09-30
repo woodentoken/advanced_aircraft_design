@@ -1,0 +1,3 @@
+[submodule "Aviary"]
+	path = Aviary
+	url = https://github.com/OpenMDAO/Aviary
