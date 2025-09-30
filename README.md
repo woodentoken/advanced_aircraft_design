@@ -11,10 +11,12 @@ The course is taught by Dr. Christina Harvey.
 # Dependencies
 
 I'd recommend using a virtual environment defined by the tool `uv`, which is ideal for managing Python dependencies.
-You can install it via pip if you don't have it already:
 
-```bash
-pip install uv
+You can find documentation for `uv` [here](https://docs.astral.sh/uv/). Look at the installation instructions for your operating system.
+
+once `uv` is installed, you can clone this repository and install the dependencies with:
+
 ```
+uv sync
 
-You can find documentation for `uv` [here](https://docs.astral.sh/uv/)
+```
