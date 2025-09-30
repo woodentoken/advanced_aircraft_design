@@ -1,4 +1,10 @@
-student name: Kaleb Bordner
+# Contributors
+
+- Joshua Booth
+- Kaleb Bordner
+- Nick Rusali
+- Sherwin Shi
+- Xingmin Han
 
 # Advanced Aircraft Design
 
@@ -7,6 +13,10 @@ This repository contains the course materials and assignments for the Advanced A
 The course focuses on the principles and practices of designing advanced aircraft, covering topics such as aerodynamics, structures, propulsion, and systems integration.
 
 The course is taught by Dr. Christina Harvey.
+
+# Project Mission
+
+Search and Rescue redesign of a NASA single aisle passenger aircraft to focus on efficiency and emissions reduction.
 
 # Dependencies
 
