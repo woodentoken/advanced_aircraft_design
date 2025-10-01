@@ -27,6 +27,7 @@ You can find documentation for `uv` [here](https://docs.astral.sh/uv/). Look at 
 once `uv` is installed, you can clone this repository and install the dependencies with:
 
 ```
-uv sync
-
+./update_submodules.sh
 ```
+
+Which will locally install the Aviary submodule and make it available for import.
