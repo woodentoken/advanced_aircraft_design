@@ -1,6 +1,8 @@
 # Python-generated files
 Aviary/
 pyoptsparse/
+build_pyoptsparse/
+
 __pycache__/
 *.py[oc]
 build/
