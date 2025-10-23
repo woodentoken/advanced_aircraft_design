@@ -9,7 +9,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
   "aviary",
-  "build_pyoptsparse",
+  # "build_pyoptsparse",
   "pyoptsparse",
   "icecream>=2.1.8",
   "ipdb>=0.13.13",
@@ -20,5 +20,5 @@ dependencies = [
 
 [tool.uv.sources]
 aviary = { path = "Aviary" }
-build_pyoptsparse = { path = "build_pyoptsparse" }
+# build_pyoptsparse = { path = "build_pyoptsparse" }
 pyoptsparse = { path = "pyoptsparse" }
