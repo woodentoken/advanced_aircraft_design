@@ -16,9 +16,13 @@ dependencies = [
   "polars>=1.34.0b1",
   "cyipopt>=1.6.1",
   "tabulate>=0.9.0",
+  "ambiance>=1.3.1",
+  "myst-nb>=1.3.0",
+  "openaerostruct>=2.12.0",
+  "testflo>=1.4.20",
 ]
 
 [tool.uv.sources]
-aviary = { path = "Aviary" }
-build_pyoptsparse = { path = "build_pyoptsparse" }
-pyoptsparse = { path = "pyoptsparse" }
+aviary = { path = "Aviary", editable = true }
+build_pyoptsparse = { path = "build_pyoptsparse", editable = true }
+pyoptsparse = { path = "pyoptsparse", editable = true }
