@@ -18,6 +18,10 @@ The course is taught by Dr. Christina Harvey.
 
 Search and Rescue redesign of a NASA single aisle passenger aircraft to focus on efficiency and emissions reduction.
 
+# Analysis
+
+Analysis scripts are housed in the SAR/ directory.
+
 # Dependencies and Setup
 
 I'd recommend using a virtual environment defined by the tool `uv`, which is ideal for managing Python dependencies.
