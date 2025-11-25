@@ -2,8 +2,8 @@
 ## Wing
 | Variable Name | Value | Units |
 | :- | :- | :- |
-| aircraft:wing:area | 993.49 | ft**2 |
-| aircraft:wing:span | 104.68 | ft |
+| aircraft:wing:area | 1008.42 | ft**2 |
+| aircraft:wing:span | 105.47 | ft |
 | aircraft:wing:aspect_ratio | 11.03 | - |
 | aircraft:wing:sweep | 26.34 | deg |
 
@@ -11,8 +11,8 @@
 ### Horizontal Tail
 | Variable Name | Value | Units |
 | :- | :- | :- |
-| aircraft:horizontal_tail:area | 224.71 | ft**2 |
-| aircraft:vertical_tail:area | 156.29 | ft**2 |
+| aircraft:horizontal_tail:area | 228.09 | ft**2 |
+| aircraft:vertical_tail:area | 158.64 | ft**2 |
 
 ## Fuselage
 | Variable Name | Value | Units |

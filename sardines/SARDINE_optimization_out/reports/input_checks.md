@@ -60,7 +60,7 @@ These local subsystem inputs are unconnected, and may be using default values sp
 | **pre_mission.prop_mass** | [0.] | lbm | ['pre_mission.core_subsystems.core_mass.fixed_mass.engine.prop_mass']|
 | **pre_mission.pylon_len** | [0.] | ft | ['pre_mission.core_subsystems.core_mass.fuel_mass.fuselage.pylon_len']|
 | **pre_mission.slat_defl_up** | [0.] | deg | ['pre_mission.core_subsystems.core_aerodynamics.flaps_up.BasicFlapsCalculations.slat_defl']|
-| **target_range** | [3480.] | nmi | ['range_constraint.target_range']|
+| **target_range** | [2980.] | nmi | ['range_constraint.target_range']|
 | **tau_flaps** | [0.9] | unitless | ['event_xform.tau_flaps']|
 | **tau_gear** | [0.2] | unitless | ['event_xform.tau_gear']|
 | **taxi.throttle** | [[0.]] | unitless | ['taxi.core_propulsion.turbofan_23k_1.interpolation.throttle']|
@@ -68,10 +68,6 @@ These local subsystem inputs are unconnected, and may be using default values sp
 | **taxi.vectorize_performance.nox_rate_0** | [0.] | lbm/h | ['taxi.core_propulsion.vectorize_performance.nox_rate_0']|
 | **taxi.vectorize_performance.shaft_power_0** | [0.] | hp | ['taxi.core_propulsion.vectorize_performance.shaft_power_0']|
 | **taxi.vectorize_performance.shaft_power_max_0** | [0.] | hp | ['taxi.core_propulsion.vectorize_performance.shaft_power_max_0']|
-| **traj.accel.rhs_all.vectorize_performance.electric_power_in_0** | [0. 0. 0. 0.] | kW | ['traj.phases.accel.rhs_all.core_propulsion.vectorize_performance.electric_power_in_0']|
-| **traj.accel.rhs_all.vectorize_performance.nox_rate_0** | [0. 0. 0. 0.] | lbm/h | ['traj.phases.accel.rhs_all.core_propulsion.vectorize_performance.nox_rate_0']|
-| **traj.accel.rhs_all.vectorize_performance.shaft_power_0** | [0. 0. 0. 0.] | hp | ['traj.phases.accel.rhs_all.core_propulsion.vectorize_performance.shaft_power_0']|
-| **traj.accel.rhs_all.vectorize_performance.shaft_power_max_0** | [0. 0. 0. 0.] | hp | ['traj.phases.accel.rhs_all.core_propulsion.vectorize_performance.shaft_power_max_0']|
 | **traj.ascent.rhs_all.aero_ramps.flap_factor:final_val** | [0.] | unitless | ['traj.phases.ascent.rhs_all.core_aerodynamics.aero_ramps.flap_factor:final_val']|
 | **traj.ascent.rhs_all.aero_ramps.flap_factor:initial_val** | [1.] | unitless | ['traj.phases.ascent.rhs_all.core_aerodynamics.aero_ramps.flap_factor:initial_val']|
 | **traj.ascent.rhs_all.aero_ramps.gear_factor:final_val** | [0.] | unitless | ['traj.phases.ascent.rhs_all.core_aerodynamics.aero_ramps.gear_factor:final_val']|
@@ -82,20 +78,13 @@ These local subsystem inputs are unconnected, and may be using default values sp
 | **traj.ascent.rhs_all.vectorize_performance.nox_rate_0** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | lbm/h | ['traj.phases.ascent.rhs_all.core_propulsion.vectorize_performance.nox_rate_0']|
 | **traj.ascent.rhs_all.vectorize_performance.shaft_power_0** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | hp | ['traj.phases.ascent.rhs_all.core_propulsion.vectorize_performance.shaft_power_0']|
 | **traj.ascent.rhs_all.vectorize_performance.shaft_power_max_0** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | hp | ['traj.phases.ascent.rhs_all.core_propulsion.vectorize_performance.shaft_power_max_0']|
-| **traj.climb1.rhs_all.atmosphere.velocity** | [0. 0. 0. 0.] | ft/s | ['traj.phases.climb1.rhs_all.atmosphere.flight_conditions.velocity']|
-| **traj.climb1.rhs_all.speed_bal.rhs:EAS** | [0. 0. 0. 0.] | unitless | ['traj.phases.climb1.rhs_all.mach_balance_group.speed_bal.rhs:EAS']|
-| **traj.climb1.rhs_all.vectorize_performance.electric_power_in_0** | [0. 0. 0. 0.] | kW | ['traj.phases.climb1.rhs_all.core_propulsion.vectorize_performance.electric_power_in_0']|
-| **traj.climb1.rhs_all.vectorize_performance.nox_rate_0** | [0. 0. 0. 0.] | lbm/h | ['traj.phases.climb1.rhs_all.core_propulsion.vectorize_performance.nox_rate_0']|
-| **traj.climb1.rhs_all.vectorize_performance.shaft_power_0** | [0. 0. 0. 0.] | hp | ['traj.phases.climb1.rhs_all.core_propulsion.vectorize_performance.shaft_power_0']|
-| **traj.climb1.rhs_all.vectorize_performance.shaft_power_max_0** | [0. 0. 0. 0.] | hp | ['traj.phases.climb1.rhs_all.core_propulsion.vectorize_performance.shaft_power_max_0']|
-| **traj.climb1.rhs_all.velocity_rate** | [1. 1. 1. 1.] | m/s**2 | ['traj.phases.climb1.rhs_all.ALTITUDE_RATE_MAX.velocity_rate']|
-| **traj.climb2.rhs_all.atmosphere.velocity** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | ft/s | ['traj.phases.climb2.rhs_all.atmosphere.flight_conditions.velocity']|
-| **traj.climb2.rhs_all.speed_bal.rhs:EAS** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | unitless | ['traj.phases.climb2.rhs_all.mach_balance_group.speed_bal.rhs:EAS']|
-| **traj.climb2.rhs_all.vectorize_performance.electric_power_in_0** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | kW | ['traj.phases.climb2.rhs_all.core_propulsion.vectorize_performance.electric_power_in_0']|
-| **traj.climb2.rhs_all.vectorize_performance.nox_rate_0** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | lbm/h | ['traj.phases.climb2.rhs_all.core_propulsion.vectorize_performance.nox_rate_0']|
-| **traj.climb2.rhs_all.vectorize_performance.shaft_power_0** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | hp | ['traj.phases.climb2.rhs_all.core_propulsion.vectorize_performance.shaft_power_0']|
-| **traj.climb2.rhs_all.vectorize_performance.shaft_power_max_0** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | hp | ['traj.phases.climb2.rhs_all.core_propulsion.vectorize_performance.shaft_power_max_0']|
-| **traj.climb2.rhs_all.velocity_rate** | [1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.] | m/s**2 | ['traj.phases.climb2.rhs_all.ALTITUDE_RATE_MAX.velocity_rate']|
+| **traj.climb1.rhs_all.atmosphere.velocity** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | ft/s | ['traj.phases.climb1.rhs_all.atmosphere.flight_conditions.velocity']|
+| **traj.climb1.rhs_all.speed_bal.rhs:EAS** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | unitless | ['traj.phases.climb1.rhs_all.mach_balance_group.speed_bal.rhs:EAS']|
+| **traj.climb1.rhs_all.vectorize_performance.electric_power_in_0** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | kW | ['traj.phases.climb1.rhs_all.core_propulsion.vectorize_performance.electric_power_in_0']|
+| **traj.climb1.rhs_all.vectorize_performance.nox_rate_0** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | lbm/h | ['traj.phases.climb1.rhs_all.core_propulsion.vectorize_performance.nox_rate_0']|
+| **traj.climb1.rhs_all.vectorize_performance.shaft_power_0** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | hp | ['traj.phases.climb1.rhs_all.core_propulsion.vectorize_performance.shaft_power_0']|
+| **traj.climb1.rhs_all.vectorize_performance.shaft_power_max_0** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | hp | ['traj.phases.climb1.rhs_all.core_propulsion.vectorize_performance.shaft_power_max_0']|
+| **traj.climb1.rhs_all.velocity_rate** | [1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.] | m/s**2 | ['traj.phases.climb1.rhs_all.ALTITUDE_RATE_MAX.velocity_rate']|
 | **traj.desc1.rhs_all.atmosphere.velocity** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | ft/s | ['traj.phases.desc1.rhs_all.atmosphere.flight_conditions.velocity']|
 | **traj.desc1.rhs_all.speed_bal.rhs:mach** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | unitless | ['traj.phases.desc1.rhs_all.mach_balance_group.speed_bal.rhs:mach']|
 | **traj.desc1.rhs_all.vectorize_performance.electric_power_in_0** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | kW | ['traj.phases.desc1.rhs_all.core_propulsion.vectorize_performance.electric_power_in_0']|
@@ -103,12 +92,6 @@ These local subsystem inputs are unconnected, and may be using default values sp
 | **traj.desc1.rhs_all.vectorize_performance.shaft_power_0** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | hp | ['traj.phases.desc1.rhs_all.core_propulsion.vectorize_performance.shaft_power_0']|
 | **traj.desc1.rhs_all.vectorize_performance.shaft_power_max_0** | [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] | hp | ['traj.phases.desc1.rhs_all.core_propulsion.vectorize_performance.shaft_power_max_0']|
 | **traj.desc1.rhs_all.velocity_rate** | [1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.] | m/s**2 | ['traj.phases.desc1.rhs_all.ALTITUDE_RATE_MAX.velocity_rate']|
-| **traj.desc2.rhs_all.atmosphere.velocity** | [0. 0. 0. 0.] | ft/s | ['traj.phases.desc2.rhs_all.atmosphere.flight_conditions.velocity']|
-| **traj.desc2.rhs_all.vectorize_performance.electric_power_in_0** | [0. 0. 0. 0.] | kW | ['traj.phases.desc2.rhs_all.core_propulsion.vectorize_performance.electric_power_in_0']|
-| **traj.desc2.rhs_all.vectorize_performance.nox_rate_0** | [0. 0. 0. 0.] | lbm/h | ['traj.phases.desc2.rhs_all.core_propulsion.vectorize_performance.nox_rate_0']|
-| **traj.desc2.rhs_all.vectorize_performance.shaft_power_0** | [0. 0. 0. 0.] | hp | ['traj.phases.desc2.rhs_all.core_propulsion.vectorize_performance.shaft_power_0']|
-| **traj.desc2.rhs_all.vectorize_performance.shaft_power_max_0** | [0. 0. 0. 0.] | hp | ['traj.phases.desc2.rhs_all.core_propulsion.vectorize_performance.shaft_power_max_0']|
-| **traj.desc2.rhs_all.velocity_rate** | [1. 1. 1. 1.] | m/s**2 | ['traj.phases.desc2.rhs_all.ALTITUDE_RATE_MAX.velocity_rate']|
 | **traj.groundroll.rhs_all.aero_ramps.flap_factor:final_val** | [1.] | unitless | ['traj.phases.groundroll.rhs_all.core_aerodynamics.aero_ramps.flap_factor:final_val']|
 | **traj.groundroll.rhs_all.aero_ramps.flap_factor:initial_val** | [1.] | unitless | ['traj.phases.groundroll.rhs_all.core_aerodynamics.aero_ramps.flap_factor:initial_val']|
 | **traj.groundroll.rhs_all.aero_ramps.gear_factor:final_val** | [1.] | unitless | ['traj.phases.groundroll.rhs_all.core_aerodynamics.aero_ramps.gear_factor:final_val']|
@@ -126,15 +109,15 @@ These local subsystem inputs are unconnected, and may be using default values sp
 | **traj.rotation.rhs_all.aero_ramps.flap_factor:initial_val** | [1.] | unitless | ['traj.phases.rotation.rhs_all.core_aerodynamics.aero_ramps.flap_factor:initial_val']|
 | **traj.rotation.rhs_all.aero_ramps.gear_factor:final_val** | [1.] | unitless | ['traj.phases.rotation.rhs_all.core_aerodynamics.aero_ramps.gear_factor:final_val']|
 | **traj.rotation.rhs_all.aero_ramps.gear_factor:initial_val** | [1.] | unitless | ['traj.phases.rotation.rhs_all.core_aerodynamics.aero_ramps.gear_factor:initial_val']|
-| **traj.rotation.rhs_all.altitude** | [0. 0. 0. 0.] | ft | ['traj.phases.rotation.rhs_all.atmosphere.standard_atmosphere.h', 'traj.phases.rotation.rhs_all.core_aerodynamics.drag_coef.altitude', 'traj.phases.rotation.rhs_all.core_aerodynamics.kclge.altitude', 'traj.phases.rotation.rhs_all.core_propulsion.turbofan_23k_1.interpolation.altitude', 'traj.phases.rotation.rhs_all.core_propulsion.turbofan_23k_1.max_interpolation.altitude']|
+| **traj.rotation.rhs_all.altitude** | [0. 0. 0. 0. 0. 0. 0. 0.] | ft | ['traj.phases.rotation.rhs_all.atmosphere.standard_atmosphere.h', 'traj.phases.rotation.rhs_all.core_aerodynamics.drag_coef.altitude', 'traj.phases.rotation.rhs_all.core_aerodynamics.kclge.altitude', 'traj.phases.rotation.rhs_all.core_propulsion.turbofan_23k_1.interpolation.altitude', 'traj.phases.rotation.rhs_all.core_propulsion.turbofan_23k_1.max_interpolation.altitude']|
 | **traj.rotation.rhs_all.dt_flaps** | [3.] | s | ['traj.phases.rotation.rhs_all.core_aerodynamics.aero_ramps.flap_factor:t_duration']|
 | **traj.rotation.rhs_all.dt_gear** | [7.] | s | ['traj.phases.rotation.rhs_all.core_aerodynamics.aero_ramps.gear_factor:t_duration']|
-| **traj.rotation.rhs_all.flight_path_angle** | [0. 0. 0. 0.] | rad | ['traj.phases.rotation.rhs_all.rotation_eom.flight_path_angle']|
-| **traj.rotation.rhs_all.t_curr** | [0. 0. 0. 0.] | s | ['traj.phases.rotation.rhs_all.core_aerodynamics.aero_ramps.time']|
-| **traj.rotation.rhs_all.vectorize_performance.electric_power_in_0** | [0. 0. 0. 0.] | kW | ['traj.phases.rotation.rhs_all.core_propulsion.vectorize_performance.electric_power_in_0']|
-| **traj.rotation.rhs_all.vectorize_performance.nox_rate_0** | [0. 0. 0. 0.] | lbm/h | ['traj.phases.rotation.rhs_all.core_propulsion.vectorize_performance.nox_rate_0']|
-| **traj.rotation.rhs_all.vectorize_performance.shaft_power_0** | [0. 0. 0. 0.] | hp | ['traj.phases.rotation.rhs_all.core_propulsion.vectorize_performance.shaft_power_0']|
-| **traj.rotation.rhs_all.vectorize_performance.shaft_power_max_0** | [0. 0. 0. 0.] | hp | ['traj.phases.rotation.rhs_all.core_propulsion.vectorize_performance.shaft_power_max_0']|
+| **traj.rotation.rhs_all.flight_path_angle** | [0. 0. 0. 0. 0. 0. 0. 0.] | rad | ['traj.phases.rotation.rhs_all.rotation_eom.flight_path_angle']|
+| **traj.rotation.rhs_all.t_curr** | [0. 0. 0. 0. 0. 0. 0. 0.] | s | ['traj.phases.rotation.rhs_all.core_aerodynamics.aero_ramps.time']|
+| **traj.rotation.rhs_all.vectorize_performance.electric_power_in_0** | [0. 0. 0. 0. 0. 0. 0. 0.] | kW | ['traj.phases.rotation.rhs_all.core_propulsion.vectorize_performance.electric_power_in_0']|
+| **traj.rotation.rhs_all.vectorize_performance.nox_rate_0** | [0. 0. 0. 0. 0. 0. 0. 0.] | lbm/h | ['traj.phases.rotation.rhs_all.core_propulsion.vectorize_performance.nox_rate_0']|
+| **traj.rotation.rhs_all.vectorize_performance.shaft_power_0** | [0. 0. 0. 0. 0. 0. 0. 0.] | hp | ['traj.phases.rotation.rhs_all.core_propulsion.vectorize_performance.shaft_power_0']|
+| **traj.rotation.rhs_all.vectorize_performance.shaft_power_max_0** | [0. 0. 0. 0. 0. 0. 0. 0.] | hp | ['traj.phases.rotation.rhs_all.core_propulsion.vectorize_performance.shaft_power_max_0']|
 | **vrot.g** | [1.] | lbf/lbm | ['vrot.g']|
 | **vrot.rho** | [0.0023769] | slug/ft**3 | ['vrot.rho']|
 
