@@ -2,54 +2,26 @@ import time
 
 import aviary.api as av
 import dymos as dm
-import ipdb
 import openmdao.api as om
-from aviary.core.pre_mission_group import PreMissionGroup
-from aviary.mission.flops_based.phases.energy_phase import EnergyPhase
-from aviary.models.missions.height_energy_default import phase_info
-from aviary.utils.aviary_values import AviaryValues
-from aviary.variable_info.enums import Verbosity
-from aviary.variable_info.functions import setup_model_options, setup_trajectory_params
-from aviary.variable_info.variable_meta_data import _MetaData as BaseMetaData
-from aviary.variable_info.variables import Aircraft, Dynamic, Mission
-from icecream import ic
 
-from missions.loiter_phase import phase_info as loiter_phase_info
 from missions.parametric_phase_infos import define_phase_info
-from missions.outputted_phase_info import phase_info as designed_he_phase_info
-from two_dof_default import phase_info as two_dof_phase_info
-
-# this is the mission file
-parametric_phase_infos = define_phase_info()
+from missions.sardine_phase_info import phase_info as sardine_height_energy_phases
+from missions.two_dof_default import phase_info as two_dof_phase_info
 
 prob = av.AviaryProblem()
 
+# GASP models
 small_single_aisle_GASP = "aircraft/small_single_aisle_GASP.csv"
 sardine_turboprop_GASP = "aircraft/sardine_turboprop_GASP.csv"
-advanced_single_aisle_FLOPS = "aircraft/advanced_single_aisle_FLOPS.csv"
 
-# aviary_inputs, something = av.create_vehicle(csv_path)
-# working combos
-# prob.load_inputs(
-#     "models/aircraft/advanced_single_aisle/advanced_single_aisle_FLOPS.csv"
-#     loiter_phase_info,
-# )
+# FLOPS models
+base_ASA = "aircraft/advanced_single_aisle_FLOPS.csv"
+sardine_ASA = "aircraft/sardine_advanced_single_aisle_FLOPS.csv"
 
-# prob.load_inputs(
-#     small_single_aisle_GASP,
-#     parametric_phase_infos["two_dof_phase_info"],
-# )
+### Problem definition
+prob.load_inputs(sardine_ASA, sardine_height_energy_phases)
 
-prob.load_inputs(
-    advanced_single_aisle_FLOPS,
-    designed_he_phase_info,
-)
-
-# aviary_inputs.set_val(Mission.Summary.RANGE, 1906.0, units="NM")
 prob.check_and_preprocess_inputs()
-# prob.add_pre_mission_systems()
-# prob.add_phases()
-# prob.add_post_mission_systems()
 
 prob.build_model()
 
@@ -57,19 +29,30 @@ prob.build_model()
 prob.add_driver("IPOPT", max_iter=100)
 prob.driver.opt_settings["tol"] = 1.0e-4
 
-
 prob.add_design_variables()
+
+# add more design vars (these are just placeholders...)
+# prob.model.add_design_var(
+#     av.Aircraft.Wing.ASPECT_RATIO, lower=10.0, upper=20.0, ref=12.0
+# )
+# prob.model.add_design_var(
+#     av.Aircraft.Wing.COMPOSITE_FRACTION, lower=0.25, upper=1.0, ref=0.5
+# )
+# prob.model.add_design_var(
+#     av.Aircraft.Engine.SCALE_FACTOR, lower=0.25, upper=1.0, ref=0.5
+# )
+
 prob.add_objective()
 prob.setup()
 prob.set_initial_guesses()
 
-prob.verbosity = Verbosity.VERBOSE
-
-
 start_time = time.time()
 prob.run_aviary_problem()
-# (prob_fallout_max_fuel_plus_payload, prob_fallout_ferry) = prob.run_payload_range(
-#     verbosity=2
-# )
 end_time = time.time()
 print(f"Total run time: {end_time - start_time} seconds")
+
+# post mission reporting
+burned_fuel = prob.get_val(av.Mission.Summary.FUEL_BURNED, units="lb")[0]
+final_mass = prob.get_val(av.Mission.Summary.FINAL_MASS, units="lb")[0]
+print(f"Fuel burned: {burned_fuel} lb")
+print(f"Final mass: {final_mass} lb")
