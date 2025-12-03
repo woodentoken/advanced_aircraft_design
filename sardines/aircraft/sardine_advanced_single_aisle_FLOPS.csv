@@ -16,8 +16,8 @@ aircraft:crew_and_payload:design:num_tourist_class,10,unitless
 aircraft:crew_and_payload:flight_crew_mass_scaler,1,unitless
 aircraft:crew_and_payload:mass_per_passenger,165,lbm
 
-# misc cargo set to 10,000 lb to account for rescue equipment and supplies
-aircraft:crew_and_payload:misc_cargo,10_000,lbm 
+# misc cargo set to 5000 lb to account for rescue equipment and supplies
+aircraft:crew_and_payload:misc_cargo,5_000,lbm 
 aircraft:crew_and_payload:non_flight_crew_mass_scaler,1,unitless
 aircraft:crew_and_payload:num_business_class,0,unitless
 aircraft:crew_and_payload:num_first_class,0,unitless
@@ -70,10 +70,10 @@ aircraft:fuel:auxiliary_fuel_capacity,0,lbm
 aircraft:fuel:fuel_system_mass_scaler,0.93202,unitless
 aircraft:fuel:fuselage_fuel_capacity,10_000,lbm
 aircraft:fuel:num_tanks,8,unitless
-aircraft:fuel:total_capacity,25_000.0,lbm
+aircraft:fuel:total_capacity,20_000.0,lbm
 aircraft:fuel:unusable_fuel_mass_scaler,1,unitless
-aircraft:fuel:wing_fuel_capacity,15_000.0,lbm
-aircraft:fuel:wing_fuel_fraction,0.6,unitless
+aircraft:fuel:wing_fuel_capacity,10_000.0,lbm
+aircraft:fuel:wing_fuel_fraction,0.5,unitless
 
 # austere interior, so use a small scaler for furnishings
 aircraft:furnishings:mass_scaler,0.5,unitless
@@ -181,8 +181,8 @@ aircraft:wing:wetted_area_scaler,1,unitless
 
 
 # MISSION SPECIFICS
-mission:constraints:max_mach,0.65,unitless
-mission:design:gross_mass,70_000,lbm
+mission:constraints:max_mach,0.7,unitless
+mission:design:gross_mass,55_000,lbm
 mission:design:range,2500,NM
 mission:design:thrust_takeoff_per_eng,0,lbf
 

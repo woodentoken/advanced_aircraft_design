@@ -8,8 +8,6 @@ from missions.parametric_phase_infos import define_phase_info
 from missions.sardine_phase_info import phase_info as sardine_height_energy_phases
 from missions.two_dof_default import phase_info as two_dof_phase_info
 
-prob = av.AviaryProblem()
-
 # GASP models
 small_single_aisle_GASP = "aircraft/small_single_aisle_GASP.csv"
 sardine_turboprop_GASP = "aircraft/sardine_turboprop_GASP.csv"
@@ -18,18 +16,31 @@ sardine_turboprop_GASP = "aircraft/sardine_turboprop_GASP.csv"
 base_ASA = "aircraft/advanced_single_aisle_FLOPS.csv"
 sardine_ASA = "aircraft/sardine_advanced_single_aisle_FLOPS.csv"
 
+# CONFIG
+driver_type = "IPOPT"
+
+
+### RUN AVIARY
+prob = av.AviaryProblem()
+
 ### Problem definition
 prob.load_inputs(sardine_ASA, sardine_height_energy_phases)
-
 prob.check_and_preprocess_inputs()
-
 prob.build_model()
 
 # optimizer and iteration limit are optional provided here
-prob.add_driver("IPOPT", max_iter=100)
-prob.driver.opt_settings["tol"] = 1.0e-4
+if driver_type == "IPOPT":
+    prob.add_driver("IPOPT", max_iter=111)
+    prob.driver.opt_settings["tol"] = 1.0e-3
+    prob.driver.opt_settings["constr_viol_tol"] = 1e-4
+    prob.driver.opt_settings["acceptable_tol"] = 1e-2
+    prob.driver.opt_settings["acceptable_constr_viol_tol"] = 1e-3
+    prob.driver.opt_settings["nlp_scaling_method"] = "gradient-based"
+if driver_type == "SLSQP":
+    prob.add_driver("SLSQP", max_iter=111)
 
 prob.add_design_variables()
+
 
 # add more design vars (these are just placeholders...)
 # prob.model.add_design_var(
