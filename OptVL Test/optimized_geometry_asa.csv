@@ -1,0 +1,8 @@
+Parameter,Value,Units
+Reference Area S_ref,1051.590035,ft^2
+Reference Chord c_ref,8.855456,ft
+Reference Span b_ref,118.750528,ft
+Root Chord c_root,13.998622,ft
+Taper Ratio lambda,0.265190,-
+Sweep,19.317613,deg
+Aspect Ratio AR,13.409872,-

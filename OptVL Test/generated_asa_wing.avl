@@ -1,0 +1,23 @@
+Aircraft
+#Mach
+0.0
+#iYsym iZsym Zsym
+1 0 0.0
+#Sref Cref Bref
+1051.590035 8.855456 118.750528
+#Xref Yref Zref
+0 0 0
+SURFACE
+MainWing
+#NChordwise ChordSpacing NSpanwise SpanSpacing
+12 1 20 1
+SECTION
+#Xle Yle Zle Chord Angle
+0 0 0 13.998622 0
+AFILE
+C:\Users\tadco\Desktop\OptVL Test\gen_pop\naca65210.dat
+SECTION
+#Xle Yle Zle Chord Angle
+20.81341458121304 59.375264 0 3.7122945681799995 0
+AFILE
+C:\Users\tadco\Desktop\OptVL Test\gen_pop\naca65210.dat
