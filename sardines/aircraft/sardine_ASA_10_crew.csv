@@ -15,11 +15,11 @@ aircraft:crew_and_payload:design:num_passengers,10,unitless
 aircraft:crew_and_payload:design:num_tourist_class,10,unitless
 aircraft:crew_and_payload:flight_crew_mass_scaler,1,unitless
 aircraft:crew_and_payload:mass_per_passenger,165,lbm
-aircraft:crew_and_payload:design:cargo_mass,20_000,lbm
-aircraft:crew_and_payload:cargo_mass,20_000,lbm
+aircraft:crew_and_payload:design:cargo_mass,15_000,lbm
+aircraft:crew_and_payload:cargo_mass,15_000,lbm
 
 # misc cargo set to 5000 lb to account for rescue equipment and supplies
-aircraft:crew_and_payload:misc_cargo,5_000,lbm 
+aircraft:crew_and_payload:misc_cargo,8000,lbm 
 aircraft:crew_and_payload:non_flight_crew_mass_scaler,1,unitless
 aircraft:crew_and_payload:num_business_class,0,unitless
 aircraft:crew_and_payload:num_first_class,0,unitless

@@ -9,6 +9,7 @@ aircraft:avionics:mass_scaler,1.123226,unitless
 aircraft:canard:laminar_flow_lower,0,unitless
 aircraft:canard:laminar_flow_upper,0,unitless
 aircraft:canard:mass_scaler,1,unitless
+
 aircraft:crew_and_payload:baggage_mass_per_passenger,35,lbm
 aircraft:crew_and_payload:cargo_container_mass_scaler,0,unitless
 aircraft:crew_and_payload:design:num_business_class,20,unitless
@@ -17,14 +18,15 @@ aircraft:crew_and_payload:design:num_passengers,154,unitless
 aircraft:crew_and_payload:design:num_tourist_class,118,unitless
 aircraft:crew_and_payload:flight_crew_mass_scaler,1,unitless
 aircraft:crew_and_payload:mass_per_passenger,165,lbm
-aircraft:crew_and_payload:misc_cargo,0,lbm
+aircraft:crew_and_payload:misc_cargo,8000,lbm
 aircraft:crew_and_payload:non_flight_crew_mass_scaler,1,unitless
-aircraft:crew_and_payload:num_business_class,20,unitless
-aircraft:crew_and_payload:num_first_class,16,unitless
-aircraft:crew_and_payload:num_passengers,154,unitless
-aircraft:crew_and_payload:num_tourist_class,118,unitless
+aircraft:crew_and_payload:num_business_class,0,unitless
+aircraft:crew_and_payload:num_first_class,0,unitless
+aircraft:crew_and_payload:num_passengers,10,unitless
+aircraft:crew_and_payload:num_tourist_class,10,unitless
 aircraft:crew_and_payload:passenger_service_mass_scaler,1,unitless
 aircraft:crew_and_payload:wing_cargo,0,lbm
+
 aircraft:design:base_area,0,ft**2
 aircraft:design:empty_mass_margin_scaler,0.01498,unitless
 aircraft:design:landing_to_takeoff_mass_ratio,0.84,unitless
@@ -195,7 +197,6 @@ settings:equations_of_motion,height_energy
 settings:aerodynamics_method,FLOPS
 settings:mass_method,FLOPS
 settings:problem_type,sizing
-settings:payload_range,True
 
 
 # Unconverted Values

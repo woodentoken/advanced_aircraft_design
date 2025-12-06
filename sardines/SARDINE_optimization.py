@@ -8,54 +8,62 @@ import matplotlib.pyplot as plt
 import numpy as np
 import openmdao.api as om
 import polars as pl
-from missions.parametric_phase_infos import define_phase_info
 from missions.sardine_phase_info import generate_phase_info as generate_SAR_profile
-from missions.height_energy_test_SAR import phase_info as he_test_SAR
-from missions.height_energy_test import phase_info as he_test
+from missions.basic_sardine_phase_info import (
+    generate_phase_info as generate_basic_SAR_profile,
+)
+from missions.sensitivity_height_energy import phase_info as sensitivity_he
+from missions.default_height_energy import phase_info as default_he
 from rich import print
 from itertools import product
 
 # FLOPS models
-base_ASA = "aircraft/advanced_single_aisle_FLOPS.csv"
-sardine_ASA = "aircraft/sardine_advanced_single_aisle_FLOPS.csv"
+base_ASA = "aircraft/baseline_ASA_10_crew.csv"
+sardine_ASA = "aircraft/sardine_ASA_10_crew.csv"
 
 # CONFIG
 DRIVER_TYPE = "IPOPT"
 MAX_ITER = 66
 
 
-def main(run_basic=True, run_optimized=True, run_sensitivity=True):
-    if run_basic:
+def main(run_baseline=True, run_optimized=True, run_sensitivity=True, payload=0):
+    if run_baseline:
+        print("[bold blue]Running basic analysis...[/]")
         basic_summary = run_analysis(
             aircraft=base_ASA,
-            phase_info=generate_SAR_profile(
+            phase_info=generate_basic_SAR_profile(
                 altitude_optimize=False,
                 general_mach_optimize=False,
                 cruise_mach_optimize=False,
             ),
             optimization_mode="fuel_burned",
+            payload=payload,
         )
 
     if run_optimized:
+        print("[bold green]Running optimized analysis...[/]")
         optimized_summary = run_analysis(
             aircraft=sardine_ASA,
             phase_info=generate_SAR_profile(
                 altitude_optimize=True,
-                general_mach_optimize=True,
-                cruise_mach_optimize=True,
+                general_mach_optimize=False,
+                cruise_mach_optimize=False,
             ),
             optimization_mode="fuel_burned",
+            payload=payload,
         )
 
     if run_sensitivity:
-        sensitivity_analysis(phase_info=he_test_SAR)
+        print("[bold purple]Running sensitivity analysis...[/]")
+        sensitivity_analysis(phase_info=sensitivity_he)
 
 
-def sensitivity_analysis(phase_info=he_test_SAR):
+def sensitivity_analysis(phase_info=sensitivity_he):
+    # sensitivity analysis over cruise altitude, cruise mach, and payload
+    # will run a grid of cases and output results to a csv file
+
     def modify_phase_info(phase_info, cruise_alt, cruise_mach):
         modified_phase_info = deepcopy(phase_info)
-        # modified_shep["pre_mission"]["optimize_mass"] = False
-        # modified_shep["post_mission"]["constrain_range"] = True
 
         # TODO: include variation of cruise phase durations?
 
@@ -163,6 +171,7 @@ def run_analysis(
     remove_altitudes=False,
     remove_mach=False,
 ):
+    # main function to run an Aviary problem with given phase info and aircraft model
     prob = av.AviaryProblem()
 
     # optionally remove altitude and/or mach from phase info
@@ -213,6 +222,9 @@ def run_analysis(
 def configure_problem(
     prob, payload, driver_type=DRIVER_TYPE, optimization_mode="fuel_burned"
 ):
+    # Configure the OpenMDAO problem with driver, design variables, objectives, etc.
+    # most of this is boilerplate code for Aviary problems
+
     # optimizer and iteration limit are optional provided here
     if driver_type == "IPOPT":
         prob.add_driver("IPOPT", max_iter=MAX_ITER, verbosity=2)
@@ -231,6 +243,7 @@ def configure_problem(
     prob.add_design_variables()
 
     if payload:
+        # the most reliable way to set a fixed payload is to set the value and then fix it as a design variable
         prob.aviary_inputs.set_val(
             av.Aircraft.CrewPayload.TOTAL_PAYLOAD_MASS,
             payload,
@@ -261,18 +274,21 @@ def configure_problem(
     return prob
 
 
-def strip_phase_info(phase_info, remove_altitudes=False, remove_mach=False):
+def strip_phase_info(
+    phase_info, remove_altitudes=False, remove_mach=False, remove_bounds=False
+):
+    # convenience function to remove altitude and/or mach from phase info, which should let the optimizer decide these values
     modified_phase_info = deepcopy(phase_info)
     if remove_altitudes:
         for phase, config in modified_phase_info.items():
             if "user_options" not in config.keys():
                 continue
             else:
-                if "mach_final" in config["user_options"]:
+                if "altitude_final" in config["user_options"]:
                     del config["user_options"]["altitude_final"]
-                if "mach_initial" in config["user_options"]:
+                if "altitude_initial" in config["user_options"]:
                     del config["user_options"]["altitude_initial"]
-                if "mach_bounds" in config["user_options"]:
+                if "altitude_bounds" in config["user_options"] and remove_bounds:
                     del config["user_options"]["altitude_bounds"]
 
     if remove_mach:
@@ -284,10 +300,10 @@ def strip_phase_info(phase_info, remove_altitudes=False, remove_mach=False):
                     del config["user_options"]["mach_final"]
                 if "mach_initial" in config["user_options"]:
                     del config["user_options"]["mach_initial"]
-                if "mach_bounds" in config["user_options"]:
+                if "mach_bounds" in config["user_options"] and remove_bounds:
                     del config["user_options"]["mach_bounds"]
     return modified_phase_info
 
 
 if __name__ == "__main__":
-    main(run_basic=True, run_optimized=False, run_sensitivity=False)
+    main(run_baseline=True, run_optimized=False, run_sensitivity=False, payload=7000)
