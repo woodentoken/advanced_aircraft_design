@@ -1,4 +1,4 @@
-a created unknown date
+# created unknown date
 # FLOPS-derived aircraft input deck converted from N3CC_generic_low_speed_polars_FLOPSinp.txt
 
 # Input Values
@@ -153,7 +153,7 @@ aircraft:wing:span,118.7505278165,ft
 aircraft:wing:span_efficiency_factor,0.95,unitless
 aircraft:wing:span_efficiency_reduction,False,unitless
 aircraft:wing:strut_bracing_factor,0,unitless
-aircraft:wing:surface_ctrl_mass_scaler,1.77696,unitless
+aircraft:wing:surface_control_mass_scaler,1.77696,unitless
 aircraft:wing:sweep,23.6286942529271,deg
 aircraft:wing:taper_ratio,0.265189599754917,unitless
 aircraft:wing:thickness_to_chord,0.12233,unitless
@@ -195,6 +195,8 @@ settings:equations_of_motion,height_energy
 settings:aerodynamics_method,FLOPS
 settings:mass_method,FLOPS
 settings:problem_type,sizing
+settings:payload_range,True
+
 
 # Unconverted Values
 AERIN.clapp,2

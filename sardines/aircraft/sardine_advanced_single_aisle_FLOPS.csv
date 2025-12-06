@@ -15,6 +15,8 @@ aircraft:crew_and_payload:design:num_passengers,10,unitless
 aircraft:crew_and_payload:design:num_tourist_class,10,unitless
 aircraft:crew_and_payload:flight_crew_mass_scaler,1,unitless
 aircraft:crew_and_payload:mass_per_passenger,165,lbm
+aircraft:crew_and_payload:design:cargo_mass,20_000,lbm
+aircraft:crew_and_payload:cargo_mass,20_000,lbm
 
 # misc cargo set to 5000 lb to account for rescue equipment and supplies
 aircraft:crew_and_payload:misc_cargo,5_000,lbm 
@@ -53,10 +55,10 @@ aircraft:engine:num_fuselage_engines,0,unitless
 aircraft:engine:num_engines,2,unitless
 aircraft:engine:num_wing_engines,2,unitless
 aircraft:engine:reference_mass,6000.0,lbm
-aircraft:engine:reference_sls_thrust,20_000.0,lbf
+aircraft:engine:reference_sls_thrust,25_000.0,lbf
 aircraft:engine:scale_factor,1.0,unitless
 aircraft:engine:scale_mass,True,unitless
-aircraft:engine:scaled_sls_thrust,20_000,lbf
+aircraft:engine:scaled_sls_thrust,25_000,lbf
 aircraft:engine:subsonic_fuel_flow_scaler,1,unitless
 aircraft:engine:supersonic_fuel_flow_scaler,1,unitless
 aircraft:engine:wing_locations,0.25,unitless
@@ -74,6 +76,7 @@ aircraft:fuel:total_capacity,20_000.0,lbm
 aircraft:fuel:unusable_fuel_mass_scaler,1,unitless
 aircraft:fuel:wing_fuel_capacity,10_000.0,lbm
 aircraft:fuel:wing_fuel_fraction,0.5,unitless
+aircraft:fuel:ignore_fuel_capacity_constraint,False,unitless
 
 # austere interior, so use a small scaler for furnishings
 aircraft:furnishings:mass_scaler,0.5,unitless
@@ -168,7 +171,6 @@ aircraft:wing:span,80,ft
 aircraft:wing:span_efficiency_factor,0.97,unitless
 aircraft:wing:span_efficiency_reduction,False,unitless
 aircraft:wing:strut_bracing_factor,0,unitless
-aircraft:wing:surface_ctrl_mass_scaler,1.75,unitless
 aircraft:wing:sweep,10.0,deg
 aircraft:wing:taper_ratio,0.33,unitless
 aircraft:wing:thickness_to_chord,0.125,unitless
@@ -182,8 +184,8 @@ aircraft:wing:wetted_area_scaler,1,unitless
 
 # MISSION SPECIFICS
 mission:constraints:max_mach,0.7,unitless
-mission:design:gross_mass,55_000,lbm
-mission:design:range,2500,NM
+mission:design:gross_mass,70_000,lbm
+mission:design:range,3200,NM
 mission:design:thrust_takeoff_per_eng,0,lbf
 
 mission:landing:airport_altitude,0,ft

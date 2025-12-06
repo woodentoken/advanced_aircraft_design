@@ -2,15 +2,14 @@
 # if both are true we run into a lack of DOF problem...
 general_mach_optimize = False
 general_mach_poly_order = 3
-cruise_mach_optimize = False
-cruise_mach_poly_order = 1
+cruise_mach_optimize = True
+cruise_mach_poly_order = 3
 
 altitude_optimize = True
 
 
 # these are distributed
 baseline_subsystem_options = {"core_aerodynamics": {"method": "computed"}}
-
 
 phase_info = {
     "pre_mission": {"include_takeoff": False, "optimize_mass": True},
@@ -54,8 +53,6 @@ phase_info = {
             "throttle_enforcement": "boundary_constraint",
             "time_initial_bounds": ((10.0, 100.0), "min"),
             "time_duration_bounds": ((180.0, 400.0), "min"),
-            # "distance_solve_segments": True,
-            # "target_distance": (1000.0, "nmi"),
         },
         "initial_guesses": {"time": ([25.0, 200.0], "min")},
     },
@@ -98,11 +95,10 @@ phase_info = {
             "altitude_bounds": ((10_000.0, 20_000.0), "ft"),
             "throttle_enforcement": "boundary_constraint",
             "time_initial_bounds": ((261.0, 783.0), "min"),
-            # "time_duration_bounds": ((160.0, 180.0), "min"),
-            "time_duration": (180, "min"),
-            # "time_duration": (180.0, "min"),
+            "time_duration_bounds": ((170.0, 180.0), "min"),
+            # "time_duration": (180, "min"),
         },
-        # "initial_guesses": {"time": ([255.0, 180.0], "min")},
+        "initial_guesses": {"time": ([255.0, 180.0], "min")},
     },
     "climb_3": {
         "subsystem_options": baseline_subsystem_options,
@@ -144,8 +140,6 @@ phase_info = {
             "throttle_enforcement": "boundary_constraint",
             "time_initial_bounds": ((399.0, 1197.0), "min"),
             "time_duration_bounds": ((180.0, 565.5), "min"),
-            # "distance_solve_segments": True,
-            # "target_distance": (1000.0, "nmi"),
         },
         "initial_guesses": {"time": ([475.0, 200.0], "min")},
     },
@@ -157,7 +151,7 @@ phase_info = {
             "mach_optimize": general_mach_optimize,
             "mach_polynomial_order": general_mach_poly_order,
             "mach_initial": (0.5, "unitless"),
-            # "mach_final": (0.24, "unitless"),
+            "mach_final": (0.25, "unitless"),
             "mach_bounds": ((0.22, 0.52), "unitless"),
             "altitude_optimize": altitude_optimize,
             "altitude_polynomial_order": 3,
@@ -182,22 +176,22 @@ phase_info = {
             "distance_solve_segments": False,
             "mach_optimize": False,
             "mach_polynomial_order": 1,
-            "mach_initial": (0.2, "unitless"),
-            "mach_final": (0.2, "unitless"),
+            "mach_initial": (0.25, "unitless"),
+            "mach_final": (0.25, "unitless"),
             "mach_bounds": ((0.15, 0.25), "unitless"),
             "altitude_optimize": False,
             "altitude_polynomial_order": 1,
             "altitude_initial": (1500.0, "ft"),
             "altitude_final": (1500.0, "ft"),
-            "altitude_bounds": ((1500.0, 1500.0), "ft"),
+            "altitude_bounds": ((1500.0, 2000.0), "ft"),
             "throttle_enforcement": "boundary_constraint",
             "time_initial_bounds": ((705.0, 45.0), "min"),
         },
-        # "initial_guesses": {"time": ([705.0, 45.0], "min")},
+        "initial_guesses": {"time": ([705.0, 45.0], "min")},
     },
     "post_mission": {
         "include_landing": False,
-        "constrain_range": False,
-        "target_range": (2500.0, "nmi"),
+        "constrain_range": True,
+        "target_range": (1500.0, "nmi"),
     },
 }

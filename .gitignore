@@ -1,16 +1,17 @@
 # Python-generated files
-Aviary/
-pyoptsparse/
-build_pyoptsparse/
-sardines/SARDINES_optimization_out/
-turboprop/*_out/
-
-__pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
-
 # Virtual environments
+*.egg-info
+*.py[oc]
+*_out/
 .venv
+Aviary/
+__pycache__/
+build/
+build_pyoptsparse/
+dist/
+pyoptsparse/
+sardines/*_out/
+sardines/SARDINES_optimization_out/
+sardines/saved_sensitivity*
+turboprop/*_out/
+wheels/
