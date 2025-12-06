@@ -1,0 +1,11 @@
+{
+ "Problem": "run_custom_aero_example",
+ "Script": "c:/Users/tadco/Desktop/advanced_aircraft_design/Aviary/aviary/examples/external_subsystems/custom_aero/run_custom_aero_example.py",
+ "Optimizer": "pyOptSparse_IPOPT",
+ "Number of driver iterations": 14,
+ "Number of model evals": 15,
+ "Number of deriv evals": 13,
+ "Wall clock run time": "00 hours 00 minutes 02 seconds 281.1 milliseconds",
+ "Exit status": "SUCCESS",
+ "Report generation date and time": "2025-12-05 15:56:11 "
+}
