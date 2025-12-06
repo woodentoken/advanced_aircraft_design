@@ -16,5 +16,4 @@ wheels/
 *_out/
 sardines/*_out/
 sardines/SARDINES_optimization_out/
-sardines/saved_sensitivity*
 turboprop/*_out/
