@@ -13,7 +13,7 @@ build_pyoptsparse/
 pyoptsparse/
 wheels/
 
-*_out/
+# *_out/
 sardines/*_out/
 sardines/SARDINES_optimization_out/
 turboprop/*_out/
