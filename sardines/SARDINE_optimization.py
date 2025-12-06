@@ -1,21 +1,24 @@
 import time
-import ipdb
 from copy import deepcopy
+from itertools import product
 
 import aviary.api as av
 import dymos as dm
+import ipdb
 import matplotlib.pyplot as plt
 import numpy as np
 import openmdao.api as om
 import polars as pl
-from missions.sardine_phase_info import generate_phase_info as generate_SAR_profile
+from rich import print
+
 from missions.basic_sardine_phase_info import (
     generate_phase_info as generate_basic_SAR_profile,
 )
-from missions.sensitivity_height_energy import phase_info as sensitivity_he
 from missions.default_height_energy import phase_info as default_he
-from rich import print
-from itertools import product
+from missions.optimization_sardine_phase_info import (
+    generate_phase_info as generate_SAR_profile,
+)
+from missions.sensitivity_height_energy import phase_info as sensitivity_he
 
 # FLOPS models
 base_ASA = "aircraft/baseline_ASA_10_crew.csv"
@@ -23,14 +26,33 @@ sardine_ASA = "aircraft/sardine_ASA_10_crew.csv"
 
 # CONFIG
 DRIVER_TYPE = "IPOPT"
-MAX_ITER = 66
+MAX_ITER = 100
 
 
-def main(run_baseline=True, run_optimized=True, run_sensitivity=True, payload=0):
+def main(
+    run_baseline=True,
+    run_modified=True,
+    run_optimized=True,
+    run_sensitivity=True,
+    payload=0,
+):
     if run_baseline:
         print("[bold blue]Running basic analysis...[/]")
         basic_summary = run_analysis(
             aircraft=base_ASA,
+            phase_info=generate_basic_SAR_profile(
+                altitude_optimize=False,
+                general_mach_optimize=False,
+                cruise_mach_optimize=False,
+            ),
+            optimization_mode="fuel_burned",
+            payload=payload,
+        )
+
+    if run_modified:
+        print("[bold blue]Running modified basic analysis...[/]")
+        basic_summary = run_analysis(
+            aircraft=sardine_ASA,
             phase_info=generate_basic_SAR_profile(
                 altitude_optimize=False,
                 general_mach_optimize=False,
@@ -47,7 +69,7 @@ def main(run_baseline=True, run_optimized=True, run_sensitivity=True, payload=0)
             phase_info=generate_SAR_profile(
                 altitude_optimize=True,
                 general_mach_optimize=False,
-                cruise_mach_optimize=False,
+                cruise_mach_optimize=True,
             ),
             optimization_mode="fuel_burned",
             payload=payload,
@@ -194,6 +216,7 @@ def run_analysis(
     print(f"Total run time: {end_time - start_time} seconds")
 
     # post mission reporting
+    success = prob.result.success
     design_mass = prob.get_val(av.Mission.Design.GROSS_MASS, units="lb")[0]
     burned_fuel = prob.get_val(av.Mission.Summary.FUEL_BURNED, units="lb")[0]
     final_mass = prob.get_val(av.Mission.Summary.FINAL_MASS, units="lb")[0]
@@ -202,6 +225,7 @@ def run_analysis(
         av.Aircraft.CrewPayload.TOTAL_PAYLOAD_MASS, units="lb"
     )[0]
 
+    print(f"Mission success: {success}")
     print(f"Design mass: {design_mass} lb")
     print(f"Fuel burned: {burned_fuel} lb")
     print(f"Final mass: {final_mass} lb")
@@ -209,6 +233,7 @@ def run_analysis(
     print(f"Payload: {payload_total} lb")
 
     summary = {
+        "success": success,
         "design_mass": design_mass,
         "burned_fuel": burned_fuel,
         "final_mass": final_mass,
@@ -306,4 +331,10 @@ def strip_phase_info(
 
 
 if __name__ == "__main__":
-    main(run_baseline=True, run_optimized=False, run_sensitivity=False, payload=7000)
+    main(
+        run_baseline=False,
+        run_modified=False,
+        run_optimized=True,
+        run_sensitivity=False,
+        payload=7000,
+    )
