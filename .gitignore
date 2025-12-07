@@ -7,10 +7,10 @@ dist/
 # Virtual environments
 .venv
 
-Aviary/
-build/
-build_pyoptsparse/
-pyoptsparse/
+# Aviary/
+# build/
+# build_pyoptsparse/
+# pyoptsparse/
 wheels/
 
 # *_out/

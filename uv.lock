@@ -131,8 +131,8 @@ requires-dist = [
     { name = "importlib-resources" },
     { name = "itables", marker = "extra == 'all'" },
     { name = "itables", marker = "extra == 'docs'" },
-    { name = "jupyter-book", marker = "extra == 'all'" },
-    { name = "jupyter-book", marker = "extra == 'docs'" },
+    { name = "jupyter-book", marker = "extra == 'all'", specifier = "<2" },
+    { name = "jupyter-book", marker = "extra == 'docs'", specifier = "<2" },
     { name = "matplotlib" },
     { name = "openaerostruct", marker = "extra == 'all'" },
     { name = "openaerostruct", marker = "extra == 'dev'" },
@@ -1624,7 +1624,7 @@ wheels = [
 
 [[package]]
 name = "pyoptsparse"
-version = "2.14.3"
+version = "2.14.4"
 source = { editable = "pyoptsparse" }
 dependencies = [
     { name = "mdolab-baseclasses" },
