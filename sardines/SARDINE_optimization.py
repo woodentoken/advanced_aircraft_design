@@ -11,14 +11,14 @@ import openmdao.api as om
 import polars as pl
 from rich import print
 
-from missions.basic_sardine_phase_info import (
+from missions.basic import (
     generate_phase_info as generate_basic_SAR_profile,
 )
-from missions.default_height_energy import phase_info as default_he
-from missions.optimization_sardine_phase_info import (
+from missions.archive.default_height_energy import phase_info as default_he
+from missions.optimization import (
     generate_phase_info as generate_SAR_profile,
 )
-from missions.sensitivity_height_energy import phase_info as sensitivity_he
+from missions.sensitivity import phase_info as sensitivity_he
 
 # FLOPS models
 base_ASA = "aircraft/baseline_ASA_10_crew.csv"
@@ -267,6 +267,8 @@ def configure_problem(
 
     prob.add_design_variables()
 
+    taxi_fuel_burn = 443  # lbm, estimate for fuel burned during taxi
+
     if payload:
         # the most reliable way to set a fixed payload is to set the value and then fix it as a design variable
         prob.aviary_inputs.set_val(
@@ -282,14 +284,32 @@ def configure_problem(
             default_val=payload,
         )
 
-    # prob.model.add_constraint(
-    #     av.Mission.Constraints.EXCESS_FUEL_CAPACITY,
-    #     lower=0,
-    #     upper=0,
-    #     ref=1000,
-    #     units="lbm",
-    #     alias=True,
-    # )
+    if optimization_mode == "range":
+        # use all your fuel!
+        prob.model.add_constraint(
+            av.Mission.Constraints.EXCESS_FUEL_CAPACITY,
+            lower=0,
+            upper=0,
+            ref=2000,
+            units="lbm",
+            alias=True,
+        )
+    elif optimization_mode == "fuel_burned":
+        print("fuck")
+        # save at least 5% fuel for reserves
+        prob.model.add_constraint(
+            av.Mission.Constraints.EXCESS_FUEL_CAPACITY,
+            lower=taxi_fuel_burn
+            + (
+                0.05
+                * prob.aviary_inputs.get_val(
+                    av.Aircraft.Fuel.TOTAL_CAPACITY, units="lbm"
+                )
+            ),
+            ref=2000,
+            units="lbm",
+            # alias=True,
+        )
 
     prob.add_objective(optimization_mode)
     prob.setup()
@@ -332,9 +352,9 @@ def strip_phase_info(
 
 if __name__ == "__main__":
     main(
-        run_baseline=False,
+        run_baseline=True,
         run_modified=False,
-        run_optimized=True,
+        run_optimized=False,
         run_sensitivity=False,
-        payload=7000,
+        payload=6000,
     )

@@ -10,15 +10,16 @@ aircraft:canard:laminar_flow_lower,0,unitless
 aircraft:canard:laminar_flow_upper,0,unitless
 aircraft:canard:mass_scaler,1,unitless
 
-aircraft:crew_and_payload:baggage_mass_per_passenger,35,lbm
-aircraft:crew_and_payload:cargo_container_mass_scaler,0,unitless
 aircraft:crew_and_payload:design:num_business_class,20,unitless
 aircraft:crew_and_payload:design:num_first_class,16,unitless
 aircraft:crew_and_payload:design:num_passengers,154,unitless
 aircraft:crew_and_payload:design:num_tourist_class,118,unitless
+
 aircraft:crew_and_payload:flight_crew_mass_scaler,1,unitless
+aircraft:crew_and_payload:baggage_mass_per_passenger,200,lbm
+aircraft:crew_and_payload:cargo_container_mass_scaler,0,unitless
 aircraft:crew_and_payload:mass_per_passenger,165,lbm
-aircraft:crew_and_payload:misc_cargo,8000,lbm
+aircraft:crew_and_payload:misc_cargo,4000,lbm
 aircraft:crew_and_payload:non_flight_crew_mass_scaler,1,unitless
 aircraft:crew_and_payload:num_business_class,0,unitless
 aircraft:crew_and_payload:num_first_class,0,unitless
@@ -60,10 +61,12 @@ aircraft:engine:scaled_sls_thrust,22200,lbf
 aircraft:engine:subsonic_fuel_flow_scaler,1,unitless
 aircraft:engine:supersonic_fuel_flow_scaler,1,unitless
 aircraft:engine:wing_locations,0.289682918,unitless
+
 aircraft:fins:area,0,ft**2
 aircraft:fins:mass_scaler,1,unitless
 aircraft:fins:num_fins,0,unitless
 aircraft:fins:taper_ratio,-10,unitless
+
 aircraft:fuel:auxiliary_fuel_capacity,0,lbm
 aircraft:fuel:wing_fuel_fraction,0.7752,unitless
 aircraft:fuel:fuel_system_mass_scaler,0.93202,unitless
@@ -72,6 +75,8 @@ aircraft:fuel:num_tanks,7,unitless
 aircraft:fuel:total_capacity,33136.4,lbm
 aircraft:fuel:unusable_fuel_mass_scaler,1,unitless
 aircraft:fuel:wing_fuel_capacity,33136.4,lbm
+aircraft:fuel:ignore_fuel_capacity_constraint,False,unitless
+
 aircraft:furnishings:mass_scaler,0.81859,unitless
 aircraft:fuselage:laminar_flow_lower,0,unitless
 aircraft:fuselage:laminar_flow_upper,0,unitless
@@ -169,6 +174,7 @@ mission:constraints:max_mach,0.785,unitless
 mission:design:gross_mass,130000,lbm
 mission:design:range,3500,NM
 mission:design:thrust_takeoff_per_eng,0,lbf
+
 mission:landing:airport_altitude,0,ft
 mission:landing:braking_friction_coefficient,0.35,unitless
 mission:landing:drag_coefficient_min,0.045,unitless
@@ -179,6 +185,7 @@ mission:landing:obstacle_height,50,ft
 mission:landing:rolling_friction_coefficient,0.0175,unitless
 mission:landing:spoiler_drag_coefficient,0.085,unitless
 mission:landing:spoiler_lift_coefficient,-0.81,unitless
+
 mission:summary:cruise_mach,0.785,unitless
 mission:summary:fuel_flow_scaler,1,unitless
 mission:takeoff:airport_altitude,0,ft
@@ -193,10 +200,14 @@ mission:takeoff:rolling_friction_coefficient,0.0175,unitless
 mission:takeoff:spoiler_drag_coefficient,0.085,unitless
 mission:takeoff:spoiler_lift_coefficient,-0.81,unitless
 mission:takeoff:thrust_incidence,0,deg
+mission:taxi:duration,15,min
+
 settings:equations_of_motion,height_energy
 settings:aerodynamics_method,FLOPS
 settings:mass_method,FLOPS
 settings:problem_type,sizing
+
+reserves,0.05
 
 
 # Unconverted Values

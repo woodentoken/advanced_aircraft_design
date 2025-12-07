@@ -8,14 +8,17 @@ import openmdao.api as om
 import matplotlib.patches as patches
 import polars as pl
 
-from missions.basic_sardine_phase_info import (
+from missions.basic import (
     generate_phase_info as generate_basic_SAR_profile,
 )
-from missions.optimization_sardine_phase_info import (
+from missions.optimization import (
     generate_phase_info as generate_SAR_profile,
 )
+from missions.reference import (
+    generate_phase_info as generate_static_SAR_profile,
+)
 
-sardine_height_energy_phases = generate_SAR_profile(
+sardine_height_energy_phases = generate_static_SAR_profile(
     altitude_optimize=False, general_mach_optimize=False, cruise_mach_optimize=False
 )
 
@@ -45,7 +48,7 @@ def prep_plot():
     fig = plt.figure(figsize=(8, 8))
     axes = fig.subplots(3, 1)
 
-    fig.suptitle(f"'{type}' mission profiles with bounds", fontsize=12)
+    fig.suptitle(f"comparison of mission profiles", fontsize=12)
     axes[0].set_title("Altitude", loc="left", x=0.02)
     axes[0].set_ylabel("Altitude (ft)")
     axes[1].set_title("Mach", loc="left", x=0.02)
@@ -63,7 +66,7 @@ def prep_plot():
     return fig, axes
 
 
-def plot_optimized(phase_info, type, csv, md, fig=None, axes=None, plot_bounds=False):
+def plot_mission(phase_info, run_type, csv, md, fig=None, axes=None, plot_bounds=False):
     alt_bounds = {}
     mach_bounds = {}
 
@@ -79,6 +82,7 @@ def plot_optimized(phase_info, type, csv, md, fig=None, axes=None, plot_bounds=F
     for csv_file, md_file in zip(csv, md):
         if fig is None and axes is None:
             fig, axes = prep_plot()
+            fig.suptitle(f"'{run_type}' mission profiles with bounds", fontsize=12)
 
         timeseries = pl.read_csv(csv_file)
         with open(md_file, "r") as f:
@@ -96,25 +100,25 @@ def plot_optimized(phase_info, type, csv, md, fig=None, axes=None, plot_bounds=F
             phase_start_times[phase] = accumulated_time
             accumulated_time += duration
 
-        COLOR = LINE_COLOR_DICT[type]
+        COLOR = LINE_COLOR_DICT[run_type]
 
         axes[0].plot(
             timeseries["time (s)"] / 3600,
             timeseries["altitude (ft)"],
             color=COLOR,
-            label=type,
+            label=run_type,
         )
         axes[1].plot(
             timeseries["time (s)"] / 3600,
             timeseries["mach (unitless)"],
             color=COLOR,
-            label=type,
+            label=run_type,
         )
         axes[2].plot(
             timeseries["time (s)"] / 3600,
             timeseries["drag (lbf)"],
             color=COLOR,
-            label=type,
+            label=run_type,
         )
         # axes[3].plot(
         #     timeseries["time (s)"] / 3600,
@@ -165,118 +169,46 @@ def plot_optimized(phase_info, type, csv, md, fig=None, axes=None, plot_bounds=F
                 for label, color in COLOR_DICT.items()
             ]
 
-            ax.legend(handles=legend_handles, loc="best")
+            axes[2].legend(handles=legend_handles, loc="upper left")
         else:
-            axes[0].legend(loc="best")
+            axes[2].legend(loc="upper left")
             # axes[3].add_patch(drag_rect)
+        axes[0].set_ylim(0, 35000)
+        axes[1].set_ylim(0, 0.7)
+        axes[2].set_ylim(0, 7000)
 
     for ax in axes:
         ax.autoscale(enable=True, axis="x", tight=True)
         ax.set_xticks(np.arange(0, 12, 1.0))
+        ax.set_xlim(0, 12)
 
     # axes[2].legend(loc="upper right")
 
     fig.tight_layout()
-    # plt.show()
+    if plot_bounds:
+        fig.savefig(f"plots/{run_type}_mission_profile.png", dpi=300)
 
 
-# def plot_base(phase_info):
-#     fig = plt.figure(figsize=(10, 6))
-#     axes = fig.subplots(2, 1)
-
-#     fig.suptitle("'BASELINE' mission profiles with bounds", fontsize=12)
-
-#     axes[0].set_title("Altitude", loc="left", x=0.02)
-#     axes[0].set_ylabel("Altitude (ft)")
-#     axes[1].set_title("Mach", loc="left", x=0.02)
-#     axes[1].set_xlabel("estimated time (hours)")
-#     axes[1].set_ylabel("Mach")
-
-#     for key in phase_info.keys():
-#         t_guesses = phase_info[key].get("initial_guesses", {})
-#         t_start_guess = t_guesses["time"][0][0] / 60
-#         t_end_guess = t_guesses["time"][0][0] / 60 + t_guesses["time"][0][-1] / 60
-
-#         alt_initial = phase_info[key].get("user_options").get("altitude_initial", None)
-#         alt_final = phase_info[key].get("user_options").get("altitude_final", None)
-#         alt_bounds = phase_info[key].get("user_options").get("altitude_bounds", None)
-#         mach_initial = phase_info[key].get("user_options").get("mach_initial", None)
-#         mach_final = phase_info[key].get("user_options").get("mach_final", None)
-#         mach_bounds = phase_info[key].get("user_options").get("mach_bounds", None)
-
-#         if key == "reserve_cruise_fixed_time":
-#             linestyle = "--"
-#         else:
-#             linestyle = "-"
-
-#         rect = patches.Rectangle(
-#             (t_start_guess, alt_bounds[0][0]),
-#             t_end_guess - t_start_guess,
-#             alt_bounds[0][1] - alt_bounds[0][0],
-#             linewidth=1,
-#             facecolor=COLOR_DICT[key],
-#             alpha=0.3,
-#         )
-#         axes[0].add_patch(rect)
-#         axes[0].plot(
-#             [t_start_guess, t_end_guess],
-#             [alt_initial[0], alt_final[0]],
-#             label=f"{key}",
-#             color=COLOR,
-#             linestyle=linestyle,
-#         )
-
-#         axes[0].set_ylim(0, 35_000)
-#         # axes[0].legend(loc="lower right")
-
-#         rect = patches.Rectangle(
-#             (t_start_guess, mach_bounds[0][0]),
-#             t_end_guess - t_start_guess,
-#             mach_bounds[0][1] - mach_bounds[0][0],
-#             linewidth=1,
-#             facecolor=COLOR_DICT[key],
-#             alpha=0.2,
-#         )
-#         print(key)
-#         axes[1].add_patch(rect)
-#         axes[1].plot(
-#             [t_start_guess, t_end_guess],
-#             [mach_initial[0], mach_final[0]],
-#             label=f"{key}",
-#             color=COLOR,
-#             linestyle=linestyle,
-#         )
-
-#         axes[1].set_ylim(0, 0.6)
-
-#         for ax in axes:
-#             ax.autoscale(enable=True, axis="x", tight=True)
-#             ax.set_xticks(np.arange(0, 14, 1.0))
-#             ax.spines["top"].set_visible(False)
-#             ax.spines["right"].set_visible(False)
-
-#     fig.tight_layout()
-#     plt.show()
-
-
-def comparison():
+def comparison(phase_info):
     fig, axes = prep_plot()
 
+    # plots all three mission profiles on the same plot for comparison
     for type in ["optimized", "modified", "baseline"]:
         print(f"Plotting {type} mission profile")
         csv = [f"saved_runs/{type}_mission_timeseries_data.csv"]
         md = [f"saved_runs/{type}_mission_summary.md"]
-        plot_optimized(phase_info, type, csv, md, fig, axes)
+        plot_mission(phase_info, type, csv, md, fig, axes)
 
-    fig.savefig("saved_runs/mission_profile_comparison.png", dpi=300)
+    fig.savefig("plots/mission_profile_comparison.png", dpi=300)
 
 
-def individuals():
+def individuals(phase_info):
+    # plots individual mission profiles
     for type in ["optimized", "modified", "baseline"]:
         print(f"Plotting {type} mission profile")
         csv = [f"saved_runs/{type}_mission_timeseries_data.csv"]
         md = [f"saved_runs/{type}_mission_summary.md"]
-        plot_optimized(phase_info, type, csv, md, fig, axes)
+        plot_mission(phase_info, type, csv, md, plot_bounds=True)
 
 
 if __name__ == "__main__":
@@ -284,18 +216,5 @@ if __name__ == "__main__":
     del phase_info["pre_mission"]  # Remove pre_mission phase for plotting
     del phase_info["post_mission"]  # Remove post_mission phase for plotting
 
-    # for type in ["modified"]:
-    comparison()
-    individuals()
-
-    # o_csvs = ["saved_runs/optimized_mission_timeseries_data.csv"]
-    # o_mds = ["saved_runs/optimized_mission_summary.md"]
-
-    # m_csvs = ["saved_runs/modified_mission_timeseries_data.csv"]
-    # m_mds = ["saved_runs/modified_mission_summary.md"]
-
-    # b_csvs = ["saved_runs/baseline_mission_timeseries_data.csv"]
-    # b_mds = ["saved_runs/baseline_mission_summary.md"]
-
-    # plot_base(phase_info, csvs, mds)
-    # # plot_optimized(phase_info)
+    comparison(phase_info)
+    individuals(phase_info)
