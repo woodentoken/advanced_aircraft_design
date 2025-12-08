@@ -29,6 +29,7 @@ DRIVER_TYPE = "IPOPT"
 MAX_ITER = 200
 
 
+# change the defaults here to run different cases (you can run multiple cases in one go)
 def main(
     run_ASA_unscaled=False,
     run_SAR_baseline=False,
@@ -76,7 +77,7 @@ def main(
             phase_info=generate_SAR_profile(
                 altitude_optimize=True,
                 general_mach_optimize=False,
-                cruise_mach_optimize=False,
+                cruise_mach_optimize=True,
             ),
             optimization_mode="fuel_burned",
             payload=payload,
@@ -220,7 +221,7 @@ def sensitivity_analysis(phase_info=sensitivity_he):
         outputs.append(output)
 
     print(outputs)
-    pl.dataframe(outputs).to_csv("sardine_sensitivity.csv")
+    pl.DataFrame(outputs).write_csv("sardine_sensitivity.csv")
 
 
 ### RUN AVIARY
