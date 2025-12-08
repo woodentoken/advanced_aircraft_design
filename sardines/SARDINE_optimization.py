@@ -36,9 +36,10 @@ def main(
     run_sensitivity=True,
     payload=0,
 ):
+    summaries = []
     if run_ASA_unscaled:
         print("[bold blue]Running analysis on unscaled ASA...[/]")
-        basic_summary = run_analysis(
+        unscaled_summary = run_analysis(
             aircraft=base_ASA,
             phase_info=generate_basic_SAR_profile(
                 altitude_optimize=False,
@@ -48,10 +49,12 @@ def main(
             optimization_mode="fuel_burned",
             payload=payload,
         )
+        unscaled_summary["case"] = "ASA'"
+        summaries.append(unscaled_summary)
 
     if run_SAR_baseline:
-        print("[bold orange]Running analysis on scaled ASA (SAR baseline)...[/]")
-        basic_summary = run_analysis(
+        print("[bold red]Running analysis on scaled ASA (SAR baseline)...[/]")
+        baseline_summary = run_analysis(
             aircraft=sardine_ASA,
             phase_info=generate_basic_SAR_profile(
                 altitude_optimize=False,
@@ -61,6 +64,8 @@ def main(
             optimization_mode="fuel_burned",
             payload=payload,
         )
+        baseline_summary["case"] = "SAR"
+        summaries.append(baseline_summary)
 
     if run_SAR_optimized:
         print(
@@ -71,11 +76,25 @@ def main(
             phase_info=generate_SAR_profile(
                 altitude_optimize=True,
                 general_mach_optimize=False,
-                cruise_mach_optimize=True,
+                cruise_mach_optimize=False,
             ),
             optimization_mode="fuel_burned",
             payload=payload,
         )
+        optimized_summary["case"] = "SAR optimized"
+        summaries.append(optimized_summary)
+
+    summary_dataframe = pl.DataFrame(summaries)
+    unscaled_burn = summary_dataframe.filter(pl.col("case") == "ASA'")["burned_fuel"][0]
+    baseline_burn = summary_dataframe.filter(pl.col("case") == "SAR")["burned_fuel"][0]
+
+    summary_dataframe = summary_dataframe.with_columns(
+        (pl.col("burned_fuel") / baseline_burn).alias("fuel_burn_ratio_SAR"),
+        (pl.col("burned_fuel") / unscaled_burn).alias("fuel_burn_ratio_ASA'"),
+    )
+
+    print(summary_dataframe)
+    summary_dataframe.write_csv("sardine_optimization_summary.csv")
 
     if run_sensitivity:
         print("[bold purple]Running sensitivity analysis...[/]")
@@ -255,10 +274,10 @@ def configure_problem(
     # optimizer and iteration limit are optional provided here
     if driver_type == "IPOPT":
         prob.add_driver("IPOPT", max_iter=MAX_ITER, verbosity=2)
-        prob.driver.opt_settings["tol"] = 1.0e-3
-        prob.driver.opt_settings["constr_viol_tol"] = 1e-3
-        prob.driver.opt_settings["acceptable_tol"] = 1e-2
-        prob.driver.opt_settings["acceptable_constr_viol_tol"] = 1e-3
+        prob.driver.opt_settings["tol"] = 1e-4
+        prob.driver.opt_settings["constr_viol_tol"] = 1e-4
+        prob.driver.opt_settings["acceptable_tol"] = 1e-3
+        prob.driver.opt_settings["acceptable_constr_viol_tol"] = 1e-4
         prob.driver.opt_settings["nlp_scaling_method"] = "gradient-based"
         prob.driver.opt_settings["hessian_approximation"] = "limited-memory"
     if driver_type == "SLSQP":
@@ -354,7 +373,7 @@ if __name__ == "__main__":
     main(
         run_ASA_unscaled=True,
         run_SAR_baseline=True,
-        run_SAR_optimized=False,
+        run_SAR_optimized=True,
         run_sensitivity=False,
         payload=6000,
     )

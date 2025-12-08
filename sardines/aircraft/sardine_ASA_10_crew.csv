@@ -40,9 +40,34 @@ aircraft:design:use_alt_mass,False,unitless
 aircraft:design:zero_lift_drag_coeff_factor,0.96,unitless
 
 aircraft:electrical:mass_scaler,1.0,unitless
+# aircraft:engine:additional_mass_fraction,0,unitless
+# aircraft:engine:constant_fuel_consumption,0,lbm/h
+# aircraft:engine:data_file,models/engines/turbofan_22k.csv,unitless
+# aircraft:engine:flight_idle_max_fraction,1,unitless
+# aircraft:engine:flight_idle_min_fraction,0.08,unitless
+# aircraft:engine:flight_idle_thrust_fraction,0,unitless
+# aircraft:engine:fuel_flow_scaler_constant_term,0,unitless
+# aircraft:engine:fuel_flow_scaler_linear_term,1,unitless
+# aircraft:engine:generate_flight_idle,True,unitless
+# aircraft:engine:geopotential_alt,False,unitless
+# aircraft:engine:ignore_negative_thrust,False,unitless
+# aircraft:engine:mass_scaler,1.0,unitless
+# aircraft:engine:num_fuselage_engines,0,unitless
+# aircraft:engine:num_engines,2,unitless
+# aircraft:engine:num_wing_engines,2,unitless
+# aircraft:engine:reference_mass,6000.0,lbm
+# aircraft:engine:reference_sls_thrust,22_200.5,lbf
+# aircraft:engine:scale_factor,1.0,unitless
+# aircraft:engine:scale_mass,True,unitless
+# aircraft:engine:scaled_sls_thrust,22_200,lbf
+# aircraft:engine:subsonic_fuel_flow_scaler,1,unitless
+# aircraft:engine:supersonic_fuel_flow_scaler,1,unitless
+# aircraft:engine:wing_locations,0.25,unitless
+
+
+aircraft:engine:data_file,models/engines/turbofan_22k.csv,unitless
 aircraft:engine:additional_mass_fraction,0,unitless
 aircraft:engine:constant_fuel_consumption,0,lbm/h
-aircraft:engine:data_file,models/engines/turbofan_22k.csv,unitless
 aircraft:engine:flight_idle_max_fraction,1,unitless
 aircraft:engine:flight_idle_min_fraction,0.08,unitless
 aircraft:engine:flight_idle_thrust_fraction,0,unitless
@@ -52,17 +77,17 @@ aircraft:engine:generate_flight_idle,True,unitless
 aircraft:engine:geopotential_alt,False,unitless
 aircraft:engine:ignore_negative_thrust,False,unitless
 aircraft:engine:mass_scaler,1.0,unitless
-aircraft:engine:num_fuselage_engines,0,unitless
 aircraft:engine:num_engines,2,unitless
+aircraft:engine:num_fuselage_engines,0,unitless
 aircraft:engine:num_wing_engines,2,unitless
-aircraft:engine:reference_mass,6000.0,lbm
-aircraft:engine:reference_sls_thrust,22_200.5,lbf
-aircraft:engine:scale_factor,1.0,unitless
+aircraft:engine:reference_mass,6293.8,lbm
+aircraft:engine:reference_sls_thrust,22200.5,lbf
+aircraft:engine:scale_factor,0.9,unitless
 aircraft:engine:scale_mass,True,unitless
-aircraft:engine:scaled_sls_thrust,22_200,lbf
+aircraft:engine:scaled_sls_thrust,19980,lbf
 aircraft:engine:subsonic_fuel_flow_scaler,1,unitless
 aircraft:engine:supersonic_fuel_flow_scaler,1,unitless
-aircraft:engine:wing_locations,0.25,unitless
+aircraft:engine:wing_locations,0.289682918,unitless
 
 aircraft:fins:area,0,ft**2
 aircraft:fins:mass_scaler,1,unitless
@@ -186,7 +211,7 @@ aircraft:wing:wetted_area_scaler,1,unitless
 
 # MISSION SPECIFICS
 mission:constraints:max_mach,0.7,unitless
-mission:design:gross_mass,70_000,lbm
+mission:design:gross_mass,80_000,lbm
 mission:design:range,3200,NM
 mission:design:thrust_takeoff_per_eng,0,lbf
 
