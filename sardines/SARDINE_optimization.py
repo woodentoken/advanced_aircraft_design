@@ -1,6 +1,7 @@
 import time
 from copy import deepcopy
 from itertools import product
+import csv
 
 import aviary.api as av
 import dymos as dm
@@ -20,6 +21,32 @@ from missions.optimization import (
 )
 from missions.sensitivity import phase_info as sensitivity_he
 
+
+class WingAreaFromAR(om.ExplicitComponent):
+    """
+    Compute wing area from fixed span and AR:
+        area = span0**2 / AR
+    """
+
+    def initialize(self):
+        self.options.declare('span0', types=float, desc='Fixed wing span [ft]')
+
+    def setup(self):
+        self.add_input('AR', val=10.0)          # aspect ratio
+        self.add_output('wing_area', val=900.0)  # wing area [ft**2]
+
+        self.declare_partials('wing_area', 'AR')
+
+    def compute(self, inputs, outputs):
+        AR = inputs['AR']
+        span0 = self.options['span0']
+        outputs['wing_area'] = span0 * span0 / AR
+
+    def compute_partials(self, inputs, partials):
+        AR = inputs['AR']
+        span0 = self.options['span0']
+        partials['wing_area', 'AR'] = - span0 * span0 / (AR**2)
+
 # FLOPS models
 base_ASA = "aircraft/baseline_ASA_10_crew.csv"
 sardine_ASA = "aircraft/sardine_ASA_10_crew.csv"
@@ -32,9 +59,9 @@ MAX_ITER = 200
 # change the defaults here to run different cases (you can run multiple cases in one go)
 def main(
     run_ASA_unscaled=False,
-    run_SAR_baseline=False,
+    run_SAR_baseline=True,
     run_SAR_optimized=False,
-    run_sensitivity=True,
+    run_sensitivity=False,
     payload=6000,
 ):
     summaries = []
@@ -302,6 +329,50 @@ def run_analysis(
         "payload_total": payload_total,
     }
 
+    AR_opt = prob.get_val('aircraft:wing:aspect_ratio')[0]
+    span   = prob.get_val('aircraft:wing:span',  units='ft')[0]
+    area   = prob.get_val('aircraft:wing:area',  units='ft**2')[0]
+    taper  = prob.get_val('aircraft:wing:taper_ratio')[0]
+    sweep  = prob.get_val('aircraft:wing:sweep', units='deg')[0]
+    tc     = prob.get_val('aircraft:wing:thickness_to_chord')[0]
+    fuselage_len = prob.get_val('aircraft:fuselage:length', units='ft')[0]
+
+    c_ref  = area / span
+    c_root = 2.0 * area / (span * (1.0 + taper)) # trapezoid assumption
+
+    print("\n=== Geometry summary for aero teammate ===")
+    print(f"Fuselage Length           = {fuselage_len:.4f} ft")
+    print(f"Reference area S_ref      = {area:.3f} ft^2")
+    print(f"Reference span b_ref      = {span:.3f} ft")
+    print(f"Reference chord c_ref     = {c_ref:.3f} ft")
+    print(f"Root chord c_root         = {c_root:.3f} ft")
+    print(f"Taper ratio lambda        = {taper:.4f}")
+    print(f"Sweep                     = {sweep:.3f} deg")
+    print(f"Aspect ratio AR           = {AR_opt:.4f}")
+    print(f"Thickness-to-chord (mean) = {tc:.4f}")
+
+    # if aircraft == sardine_ASA:
+    #     csv_filename = "optimized_geometry_sardine_to_aero.csv"
+    # elif aircraft == base_ASA:
+    #     csv_filename = "optimized_geometry_asa.csv"
+    # else:
+    #     csv_filename = "optimized_geometry.csv"
+
+    # with open(csv_filename, mode="w", newline="") as f:
+    #     writer = csv.writer(f)
+
+    #     writer.writerow(["Parameter", "Value", "Units"])
+
+    #     writer.writerow(["Reference Area S_ref", f"{area:.6f}", "ft^2"])
+    #     writer.writerow(["Reference Chord c_ref", f"{c_ref:.6f}", "ft"])
+    #     writer.writerow(["Reference Span b_ref", f"{span:.6f}", "ft"])
+    #     writer.writerow(["Root Chord c_root", f"{c_root:.6f}", "ft"])
+    #     writer.writerow(["Taper Ratio lambda", f"{taper:.6f}", "-"])
+    #     writer.writerow(["Sweep", f"{sweep:.6f}", "deg"])
+    #     writer.writerow(["Aspect Ratio AR", f"{AR_opt:.6f}", "-"])
+
+    # print(f"\nCSV saved to: {csv_filename}")
+
     return summary
 
 
@@ -329,7 +400,56 @@ def configure_problem(
     prob.check_and_preprocess_inputs()
     prob.build_model()
 
+    model = prob.model
+
+    feselage_length = prob.model.aviary_inputs.get_item('aircraft:fuselage:length')[0]
+    wing_thickness_to_chord = prob.model.aviary_inputs.get_item('aircraft:wing:thickness_to_chord')[0]
+    wing_aspect_ratio = prob.model.aviary_inputs.get_item('aircraft:wing:aspect_ratio')[0]
+    wing_sweep = prob.model.aviary_inputs.get_item('aircraft:wing:sweep')[0]
+    wing_taper_ratio = prob.model.aviary_inputs.get_item('aircraft:wing:taper_ratio')[0]
+    wing_span = prob.model.aviary_inputs.get_item('aircraft:wing:span')[0]
+
+    model.add_subsystem(
+        'wing_area_from_AR',
+        WingAreaFromAR(span0=wing_span),
+        promotes_inputs=[('AR', 'aircraft:wing:aspect_ratio')],
+        promotes_outputs=['wing_area'],
+    )
+    model.connect('wing_area', 'aircraft:wing:area')
+
+    lower_bound = 0.8
+    upper_bound = 1.4
+
+
     prob.add_design_variables()
+
+    prob.model.add_design_var(
+        'aircraft:fuselage:length',
+        lower= lower_bound * feselage_length,
+        upper= upper_bound* feselage_length,
+        ref = feselage_length
+    )
+
+    # prob.model.add_design_var(
+    #     'aircraft:wing:thickness_to_chord',
+    #     lower=lower_bound * wing_thickness_to_chord,
+    #     upper=upper_bound * wing_thickness_to_chord,
+    #     ref = wing_thickness_to_chord
+    # )
+
+    prob.model.add_design_var(
+        'aircraft:wing:aspect_ratio',
+        lower=lower_bound * wing_aspect_ratio,
+        upper=upper_bound * wing_aspect_ratio,
+        ref = wing_aspect_ratio
+    )
+
+    prob.model.add_design_var(
+        'aircraft:wing:sweep',
+        lower_bound * wing_sweep,
+        upper_bound * wing_sweep,
+        ref = wing_sweep
+    )
 
     if payload:
         # the most reliable way to set a fixed payload is to set the value and then fix it as a design variable
