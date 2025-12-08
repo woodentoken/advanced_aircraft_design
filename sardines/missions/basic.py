@@ -144,7 +144,7 @@ def generate_phase_info(
             },
             "initial_guesses": {"time": ([400.0, 200.0], "min")},
         },
-        "descent_2": {
+        "descent_3": {
             "subsystem_options": baseline_subsystem_options,
             "user_options": {
                 "num_segments": num_segments,
