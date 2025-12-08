@@ -14,6 +14,7 @@ dist/
 wheels/
 
 # *_out/
+sardines_nick/
 sardines/*_out/
 sardines/SARDINES_optimization_out/
 turboprop/*_out/

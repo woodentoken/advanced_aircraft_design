@@ -41,6 +41,12 @@ LINE_COLOR_DICT = {
     "baseline": "blue",
 }
 
+LABEL_MAP = {
+    "optimized": "Optimized SAR",
+    "modified": "SAR",
+    "baseline": "ASA'",
+}
+
 plt.rcParams.update({"lines.linewidth": 2, "lines.markersize": 8})
 
 
@@ -101,24 +107,25 @@ def plot_mission(phase_info, run_type, csv, md, fig=None, axes=None, plot_bounds
             accumulated_time += duration
 
         COLOR = LINE_COLOR_DICT[run_type]
+        LABEL = LABEL_MAP[run_type]
 
         axes[0].plot(
             timeseries["time (s)"] / 3600,
             timeseries["altitude (ft)"],
             color=COLOR,
-            label=run_type,
+            label=LABEL,
         )
         axes[1].plot(
             timeseries["time (s)"] / 3600,
             timeseries["mach (unitless)"],
             color=COLOR,
-            label=run_type,
+            label=LABEL,
         )
         axes[2].plot(
             timeseries["time (s)"] / 3600,
             timeseries["drag (lbf)"],
             color=COLOR,
-            label=run_type,
+            label=LABEL,
         )
         # axes[3].plot(
         #     timeseries["time (s)"] / 3600,
