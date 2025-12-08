@@ -363,13 +363,13 @@ def run_analysis(
 
     #     writer.writerow(["Parameter", "Value", "Units"])
 
-    #     writer.writerow(["Reference Area S_ref", f"{area:.6f}", "ft^2"])
-    #     writer.writerow(["Reference Chord c_ref", f"{c_ref:.6f}", "ft"])
-    #     writer.writerow(["Reference Span b_ref", f"{span:.6f}", "ft"])
-    #     writer.writerow(["Root Chord c_root", f"{c_root:.6f}", "ft"])
-    #     writer.writerow(["Taper Ratio lambda", f"{taper:.6f}", "-"])
+    #     writer.writerow(["Reference Area", f"{area:.6f}", "ft^2"])
+    #     writer.writerow(["Reference Chord", f"{c_ref:.6f}", "ft"])
+    #     writer.writerow(["Reference Span", f"{span:.6f}", "ft"])
+    #     writer.writerow(["Root Chord", f"{c_root:.6f}", "ft"])
+    #     writer.writerow(["Taper Ratio", f"{taper:.6f}", "-"])
     #     writer.writerow(["Sweep", f"{sweep:.6f}", "deg"])
-    #     writer.writerow(["Aspect Ratio AR", f"{AR_opt:.6f}", "-"])
+    #     writer.writerow(["Aspect Ratio", f"{AR_opt:.6f}", "-"])
 
     # print(f"\nCSV saved to: {csv_filename}")
 
@@ -430,12 +430,12 @@ def configure_problem(
         ref = feselage_length
     )
 
-    # prob.model.add_design_var(
-    #     'aircraft:wing:thickness_to_chord',
-    #     lower=lower_bound * wing_thickness_to_chord,
-    #     upper=upper_bound * wing_thickness_to_chord,
-    #     ref = wing_thickness_to_chord
-    # )
+    prob.model.add_design_var(
+        'aircraft:wing:thickness_to_chord',
+        lower=lower_bound * wing_thickness_to_chord,
+        upper=upper_bound * wing_thickness_to_chord,
+        ref = wing_thickness_to_chord
+    )
 
     prob.model.add_design_var(
         'aircraft:wing:aspect_ratio',
