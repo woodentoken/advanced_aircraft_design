@@ -16,8 +16,8 @@ aircraft:crew_and_payload:baggage_mass_per_passenger,200,lbm
 aircraft:crew_and_payload:cargo_container_mass_scaler,0,unitless
 aircraft:crew_and_payload:flight_crew_mass_scaler,1,unitless
 aircraft:crew_and_payload:mass_per_passenger,165,lbm
-# aircraft:crew_and_payload:design:cargo_mass,15_000,lbm
-# aircraft:crew_and_payload:cargo_mass,15_000,lbm
+aircraft:crew_and_payload:design:cargo_mass,20_000,lbm
+aircraft:crew_and_payload:cargo_mass,20_000,lbm
 
 # misc cargo set to 5000 lb to account for rescue equipment and supplies
 aircraft:crew_and_payload:misc_cargo,4000,lbm 
@@ -35,7 +35,7 @@ aircraft:design:landing_to_takeoff_mass_ratio,0.65,unitless
 aircraft:design:lift_dependent_drag_coeff_factor,0.93,unitless
 aircraft:design:subsonic_drag_coeff_factor,0.95,unitless
 aircraft:design:supersonic_drag_coeff_factor,1,unitless
-aircraft:design:touchdown_mass,45_0000.0,lbm
+# aircraft:design:touchdown_mass,1108976.4,lbm
 aircraft:design:use_alt_mass,False,unitless
 aircraft:design:zero_lift_drag_coeff_factor,0.96,unitless
 
@@ -56,10 +56,10 @@ aircraft:engine:num_fuselage_engines,0,unitless
 aircraft:engine:num_engines,2,unitless
 aircraft:engine:num_wing_engines,2,unitless
 aircraft:engine:reference_mass,6000.0,lbm
-aircraft:engine:reference_sls_thrust,25_000.0,lbf
+aircraft:engine:reference_sls_thrust,22_200.5,lbf
 aircraft:engine:scale_factor,1.0,unitless
 aircraft:engine:scale_mass,True,unitless
-aircraft:engine:scaled_sls_thrust,25_000,lbf
+aircraft:engine:scaled_sls_thrust,22_200,lbf
 aircraft:engine:subsonic_fuel_flow_scaler,1,unitless
 aircraft:engine:supersonic_fuel_flow_scaler,1,unitless
 aircraft:engine:wing_locations,0.25,unitless
@@ -84,14 +84,14 @@ aircraft:furnishings:mass_scaler,0.5,unitless
 
 aircraft:fuselage:laminar_flow_lower,0,unitless
 aircraft:fuselage:laminar_flow_upper,0,unitless
-aircraft:fuselage:length,70,ft
-aircraft:fuselage:mass_scaler,0.65,unitless
+aircraft:fuselage:length,90,ft
+aircraft:fuselage:mass_scaler,0.69981,unitless
 aircraft:fuselage:max_height,10,ft
 aircraft:fuselage:max_width,14,ft
 aircraft:fuselage:military_cargo_floor,True,unitless
 aircraft:fuselage:num_fuselages,1,unitless
 aircraft:fuselage:passenger_compartment_length,60.0,ft
-aircraft:fuselage:wetted_area,3000.0,ft**2
+aircraft:fuselage:wetted_area,3500.0,ft**2
 
 aircraft:horizontal_tail:area,250.0,ft**2
 aircraft:horizontal_tail:aspect_ratio,6.0,unitless
@@ -143,14 +143,18 @@ aircraft:vertical_tail:thickness_to_chord,0.1,unitless
 aircraft:vertical_tail:wetted_area,250.0,ft**2
 aircraft:vertical_tail:wetted_area_scaler,1,unitless
 
+aircraft:wing:area,900,ft**2
+aircraft:wing:span,94.85,ft
+aircraft:wing:aspect_ratio,10,unitless
+aircraft:wing:sweep,10.0,deg
+aircraft:wing:taper_ratio,0.33,unitless
+aircraft:wing:chord_per_semispan,0.25, 0.20,0.15,0.10,unitless
+
 aircraft:wing:aeroelastic_tailoring_factor,0.33333,unitless
 aircraft:wing:airfoil_technology,1.6,unitless
-aircraft:wing:area,900,ft**2
-aircraft:wing:aspect_ratio,12,unitless
 aircraft:wing:aspect_ratio_reference,13,unitless
 aircraft:wing:bending_material_mass_scaler,1,unitless
 aircraft:wing:bwb_aft_body_mass_scaler,1,unitless
-aircraft:wing:chord_per_semispan,0.25, 0.20,0.15,0.10,unitless
 aircraft:wing:composite_fraction,0.5,unitless
 aircraft:wing:control_surface_area_ratio,0.3,unitless
 aircraft:wing:detailed_wing,True,unitless
@@ -168,12 +172,9 @@ aircraft:wing:max_camber_at_70_semispan,0.015,unitless
 aircraft:wing:misc_mass_scaler,1.7,unitless
 aircraft:wing:num_integration_stations,100,unitless
 aircraft:wing:shear_control_mass_scaler,0.75,unitless
-aircraft:wing:span,80,ft
 aircraft:wing:span_efficiency_factor,0.97,unitless
 aircraft:wing:span_efficiency_reduction,False,unitless
 aircraft:wing:strut_bracing_factor,0,unitless
-aircraft:wing:sweep,10.0,deg
-aircraft:wing:taper_ratio,0.33,unitless
 aircraft:wing:thickness_to_chord,0.125,unitless
 aircraft:wing:thickness_to_chord_dist,0.15,0.125,0.11,0.10,unitless
 aircraft:wing:thickness_to_chord_reference,0.10,unitless
