@@ -2,10 +2,10 @@
  "Problem": "SARDINE_optimization",
  "Script": "c:/Users/tadco/Desktop/advanced_aircraft_design/sardines/SARDINE_optimization.py",
  "Optimizer": "pyOptSparse_IPOPT",
- "Number of driver iterations": 153,
- "Number of model evals": 154,
- "Number of deriv evals": 103,
- "Wall clock run time": "00 hours 03 minutes 00 seconds 169.0 milliseconds",
+ "Number of driver iterations": 283,
+ "Number of model evals": 284,
+ "Number of deriv evals": 93,
+ "Wall clock run time": "00 hours 06 minutes 05 seconds 928.0 milliseconds",
  "Exit status": "FAIL",
- "Report generation date and time": "2025-12-05 15:48:18 "
+ "Report generation date and time": "2025-12-07 22:00:12 "
 }

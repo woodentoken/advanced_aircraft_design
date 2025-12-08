@@ -6,6 +6,7 @@ import openmdao.api as om
 
 from missions.parametric_phase_infos import define_phase_info
 from missions.sardine_phase_info import phase_info as sardine_height_energy_phases
+# from missions.external_sardine_phase_info import phase_info as external_sardine_height_energy_phases
 from missions.two_dof_default import phase_info as two_dof_phase_info
 
 prob = av.AviaryProblem()

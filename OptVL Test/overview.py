@@ -1,7 +1,7 @@
 #overview
 from optvl import OVLSolver
 
-ovl = OVLSolver(geo_file="C:\\Users\\tadco\\Desktop\\OptVL Test\\generated_sardine_wing2.avl", debug=True)
+ovl = OVLSolver(geo_file="C:/Users/tadco/Desktop/advanced_aircraft_design/OptVL Test/test_generated_sardine_wing.avl", debug=True)
 
 # look at the geometry to see that everything is right
 ovl.plot_geom()

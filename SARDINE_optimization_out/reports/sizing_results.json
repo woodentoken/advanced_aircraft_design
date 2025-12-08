@@ -867,13 +867,13 @@
     ],
     [
         "aircraft:wing:aspect_ratio",
-        12.0,
+        10.0,
         "unitless",
         "<class 'float'>"
     ],
     [
         "aircraft:wing:aspect_ratio_reference",
-        13.0,
+        10.0,
         "unitless",
         "<class 'float'>"
     ],
@@ -1102,7 +1102,7 @@
     ],
     [
         "mission:design:gross_mass",
-        81867.58277450057,
+        84496.32946691738,
         "lbm",
         "<class 'float'>"
     ],
@@ -1288,7 +1288,7 @@
     ],
     [
         "mission:summary:gross_mass",
-        81867.58277450057,
+        84496.32946691738,
         "lbm",
         "<class 'float'>"
     ],

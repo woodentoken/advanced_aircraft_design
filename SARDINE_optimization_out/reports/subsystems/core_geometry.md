@@ -4,7 +4,7 @@
 | :- | :- | :- |
 | aircraft:wing:area | 900.0 | ft**2 |
 | aircraft:wing:span | 80.0 | ft |
-| aircraft:wing:aspect_ratio | 12.0 | - |
+| aircraft:wing:aspect_ratio | 10.0 | - |
 | aircraft:wing:sweep | 10.0 | deg |
 
 ## Empennage

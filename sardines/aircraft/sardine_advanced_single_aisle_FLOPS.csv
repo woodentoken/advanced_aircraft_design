@@ -32,7 +32,7 @@ aircraft:design:landing_to_takeoff_mass_ratio,0.65,unitless
 aircraft:design:lift_dependent_drag_coeff_factor,0.93,unitless
 aircraft:design:subsonic_drag_coeff_factor,0.95,unitless
 aircraft:design:supersonic_drag_coeff_factor,1,unitless
-aircraft:design:touchdown_mass,45_0000.0,lbm
+aircraft:design:touchdown_mass,450_000.0,lbm
 aircraft:design:use_alt_mass,False,unitless
 aircraft:design:zero_lift_drag_coeff_factor,0.96,unitless
 
@@ -142,8 +142,8 @@ aircraft:vertical_tail:wetted_area_scaler,1,unitless
 aircraft:wing:aeroelastic_tailoring_factor,0.33333,unitless
 aircraft:wing:airfoil_technology,1.6,unitless
 aircraft:wing:area,900,ft**2
-aircraft:wing:aspect_ratio,12,unitless
-aircraft:wing:aspect_ratio_reference,13,unitless
+aircraft:wing:aspect_ratio,10,unitless
+aircraft:wing:aspect_ratio_reference,10,unitless
 aircraft:wing:bending_material_mass_scaler,1,unitless
 aircraft:wing:bwb_aft_body_mass_scaler,1,unitless
 aircraft:wing:chord_per_semispan,0.25, 0.20,0.15,0.10,unitless

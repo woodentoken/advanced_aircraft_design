@@ -1,58 +1,58 @@
 # MISSION SUMMARY
 | Variable Name | Value | Units |
 | :- | :- | :- |
-| Total Fuel Burn | 16608.84 | lbm |
+| Total Fuel Burn | 18994.53 | lbm |
 | Total Fuel Capacity | 25000.0 | lbm |
-| Excess Fuel Capacity | 7943.37 | lbm |
-| Total Time | 587.48 | min |
+| Excess Fuel Capacity | 5557.69 | lbm |
+| Total Time | 584.77 | min |
 | Total Ground Distance | 2500.0 | nmi |
 
 # MISSION SEGMENTS
 ## climb_1
 | Variable Name | Value | Units |
 | :- | :- | :- |
-| Fuel Burn | 586.48 | lbm |
-| Elapsed Time | 5.34 | min |
-| Ground Distance | 22.44 | nmi |
+| Fuel Burn | 626.51 | lbm |
+| Elapsed Time | 5.75 | min |
+| Ground Distance | 24.19 | nmi |
 
 ## cruise_1
 | Variable Name | Value | Units |
 | :- | :- | :- |
-| Fuel Burn | 7228.82 | lbm |
-| Elapsed Time | 257.1 | min |
-| Ground Distance | 1271.77 | nmi |
+| Fuel Burn | 8071.57 | lbm |
+| Elapsed Time | 255.41 | min |
+| Ground Distance | 1275.64 | nmi |
 
 ## descent_1
 | Variable Name | Value | Units |
 | :- | :- | :- |
-| Fuel Burn | 123.67 | lbm |
+| Fuel Burn | 190.89 | lbm |
 | Elapsed Time | 15.01 | min |
-| Ground Distance | 58.39 | nmi |
+| Ground Distance | 58.29 | nmi |
 
 ## cruise_2
 | Variable Name | Value | Units |
 | :- | :- | :- |
-| Fuel Burn | 4717.92 | lbm |
-| Elapsed Time | 160.01 | min |
+| Fuel Burn | 5979.98 | lbm |
+| Elapsed Time | 160.0 | min |
 | Ground Distance | 425.56 | nmi |
 
 ## climb_3
 | Variable Name | Value | Units |
 | :- | :- | :- |
-| Fuel Burn | 469.96 | lbm |
+| Fuel Burn | 494.46 | lbm |
 | Elapsed Time | 10.01 | min |
-| Ground Distance | 39.12 | nmi |
+| Ground Distance | 39.15 | nmi |
 
 ## cruise_3
 | Variable Name | Value | Units |
 | :- | :- | :- |
-| Fuel Burn | 3283.61 | lbm |
-| Elapsed Time | 120.04 | min |
-| Ground Distance | 604.27 | nmi |
+| Fuel Burn | 3448.79 | lbm |
+| Elapsed Time | 120.03 | min |
+| Ground Distance | 604.23 | nmi |
 
 ## descent_2
 | Variable Name | Value | Units |
 | :- | :- | :- |
-| Fuel Burn | 198.38 | lbm |
-| Elapsed Time | 19.96 | min |
-| Ground Distance | 78.46 | nmi |
+| Fuel Burn | 182.33 | lbm |
+| Elapsed Time | 18.57 | min |
+| Ground Distance | 72.93 | nmi |
