@@ -26,15 +26,15 @@ sardine_ASA = "aircraft/sardine_ASA_10_crew.csv"
 
 # CONFIG
 DRIVER_TYPE = "IPOPT"
-MAX_ITER = 100
+MAX_ITER = 200
 
 
 def main(
-    run_ASA_unscaled=True,
-    run_SAR_baseline=True,
-    run_SAR_optimized=True,
+    run_ASA_unscaled=False,
+    run_SAR_baseline=False,
+    run_SAR_optimized=False,
     run_sensitivity=True,
-    payload=0,
+    payload=6000,
 ):
     summaries = []
     if run_ASA_unscaled:
@@ -105,7 +105,7 @@ def main(
 
     if run_sensitivity:
         print("[bold purple]Running sensitivity analysis...[/]")
-        sensitivity_analysis(phase_info=sensitivity_he)
+        sensitivity_analysis(sensitivity_he)
 
 
 def sensitivity_analysis(phase_info=sensitivity_he):
@@ -118,70 +118,84 @@ def sensitivity_analysis(phase_info=sensitivity_he):
         # TODO: include variation of cruise phase durations?
 
         # CLIMB 1
-        modified_phase_info["climb_1"]["user_options"]["altitude_final"] = (
-            cruise_alt,
-            "ft",
-        )
-        modified_phase_info["climb_1"]["user_options"]["altitude_bounds"] = (
-            (0, cruise_alt + 5000),
-            "ft",
-        )
-        modified_phase_info["climb_1"]["user_options"]["mach_final"] = (
-            cruise_mach,
-            "unitless",
-        )
+        for climb_key in ["climb_1", "climb_3"]:
+            if climb_key not in modified_phase_info:
+                continue
+            # del modified_phase_info[climb_key]["user_options"]["time_duration_bounds"]
+            modified_phase_info[climb_key]["user_options"]["altitude_final"] = (
+                cruise_alt,
+                "ft",
+            )
+            modified_phase_info[climb_key]["user_options"]["altitude_bounds"] = (
+                (0, cruise_alt + 5000),
+                "ft",
+            )
+            modified_phase_info[climb_key]["user_options"]["mach_final"] = (
+                cruise_mach,
+                "unitless",
+            )
 
         # CRUISE 1
-        modified_phase_info["cruise_1"]["user_options"]["altitude_optimize"] = True
-        modified_phase_info["cruise_1"]["user_options"]["altitude_initial"] = (
-            cruise_alt,
-            "ft",
-        )
-        modified_phase_info["cruise_1"]["user_options"]["mach_initial"] = (
-            cruise_mach,
-            "unitless",
-        )
-        modified_phase_info["cruise_1"]["user_options"]["mach_final"] = (
-            cruise_mach,
-            "unitless",
-        )
-        modified_phase_info["cruise_1"]["user_options"]["mach_optimize"] = True
-        modified_phase_info["cruise_1"]["user_options"]["mach_polynomial_order"] = 1
-        modified_phase_info["cruise_1"]["user_options"]["mach_bounds"] = (
-            (cruise_mach - 0.2, cruise_mach + 0.2),
-            "unitless",
-        )
-        modified_phase_info["cruise_1"]["user_options"]["altitude_final"] = (
-            cruise_alt,
-            "ft",
-        )
-        modified_phase_info["cruise_1"]["user_options"]["altitude_bounds"] = (
-            (cruise_alt - 5000, cruise_alt + 5000),
-            "ft",
-        )
+        for cruise_key in ["cruise_1", "cruise_3"]:
+            if cruise_key not in modified_phase_info:
+                continue
+            # del modified_phase_info[cruise_key]["user_options"]["target_distance"]
+            modified_phase_info[cruise_key]["user_options"]["mach_optimize"] = True
+            modified_phase_info[cruise_key]["user_options"]["altitude_optimize"] = True
+            # del modified_phase_info[cruise_key]["user_options"]["time_duration_bounds"]
+
+            modified_phase_info[cruise_key]["user_options"]["altitude_initial"] = (
+                cruise_alt,
+                "ft",
+            )
+            modified_phase_info[cruise_key]["user_options"]["mach_initial"] = (
+                cruise_mach,
+                "unitless",
+            )
+            modified_phase_info[cruise_key]["user_options"]["mach_final"] = (
+                cruise_mach,
+                "unitless",
+            )
+            modified_phase_info[cruise_key]["user_options"]["mach_polynomial_order"] = 1
+            modified_phase_info[cruise_key]["user_options"]["mach_bounds"] = (
+                (cruise_mach - 0.2, cruise_mach + 0.2),
+                "unitless",
+            )
+            modified_phase_info[cruise_key]["user_options"]["altitude_final"] = (
+                cruise_alt,
+                "ft",
+            )
+            modified_phase_info[cruise_key]["user_options"]["altitude_bounds"] = (
+                (cruise_alt - 5000, cruise_alt + 5000),
+                "ft",
+            )
 
         # DESCENT 1
-        modified_phase_info["descent_1"]["user_options"]["mach_initial"] = (
-            cruise_mach,
-            "unitless",
-        )
-        modified_phase_info["descent_1"]["user_options"]["altitude_initial"] = (
-            cruise_alt,
-            "ft",
-        )
-        modified_phase_info["descent_1"]["user_options"]["altitude_bounds"] = (
-            (0, cruise_alt + 5000),
-            "ft",
-        )
+        for descent_key in ["descent_1"]:
+            if descent_key not in modified_phase_info:
+                continue
+            # del modified_phase_info[descent_key]["user_options"]["time_duration_bounds"]
+            modified_phase_info[descent_key]["user_options"]["mach_initial"] = (
+                cruise_mach,
+                "unitless",
+            )
+            modified_phase_info[descent_key]["user_options"]["altitude_initial"] = (
+                cruise_alt,
+                "ft",
+            )
+            modified_phase_info[descent_key]["user_options"]["altitude_bounds"] = (
+                (0, cruise_alt + 5000),
+                "ft",
+            )
         return modified_phase_info
 
     cruise_alts = [20_000, 25_000, 30_000]
     cruise_alts = cruise_alts[::-1]  # reverse for nicer output order
     cruise_machs = [0.5, 0.6, 0.7]
     payloads = [
-        0,
-        5_000,
-        10_000,
+        6_000,
+        12_000,
+        18_000,
     ]
 
     iter_product = product(cruise_machs, cruise_alts, payloads)
@@ -193,33 +207,31 @@ def sensitivity_analysis(phase_info=sensitivity_he):
         print(f"###\nRunning cruise altitude: [bold blue]{cruise_alt}[/] ft")
         print(f"###\nRunning payload: [bold blue]{payload}[/] lb")
 
-        fuel_burn, final_mass, design_mass, flown_range, payload_total = run_analysis(
-            phase_info=modified_phase_info, payload=payload, optimization_mode="range"
+        output = run_analysis(
+            phase_info=modified_phase_info,
+            payload=payload,
+            optimization_mode="range",
+            aircraft=sardine_ASA,
+            mach_override=cruise_mach,
         )
-        output = {
-            "run_id": index,
-            "cruise_alt": cruise_alt,
-            "design_mass": design_mass,
-            "fuel_burn": fuel_burn,
-            "final_mass": final_mass,
-            "flown_range": flown_range,
-            "payload_total": payload_total,
-            "cruise_mach": cruise_mach,
-        }
+        output["run_id"] = index
+        output["cruise_alt"] = cruise_alt
+        output["cruise_mach"] = cruise_mach
         outputs.append(output)
 
     print(outputs)
-    pl.dataframe(outputs).to_csv("sardine_sensitivity_basic.csv")
+    pl.dataframe(outputs).to_csv("sardine_sensitivity.csv")
 
 
 ### RUN AVIARY
 def run_analysis(
     phase_info,
     aircraft,
-    optimization_mode,
+    optimization_mode="fuel_burned",
     payload=0,
     remove_altitudes=False,
     remove_mach=False,
+    mach_override=None,
 ):
     # main function to run an Aviary problem with given phase info and aircraft model
     prob = av.AviaryProblem()
@@ -234,9 +246,12 @@ def run_analysis(
 
     ### Problem definition
     prob.load_inputs(aircraft, phase_info)
+    if mach_override is not None:
+        prob.model.aviary_inputs.set_val(av.Mission.Summary.CRUISE_MACH, mach_override)
 
     # configure problem with payload and optimization mode and run boilerplate code
-    prob = configure_problem(prob, payload)
+    prob = configure_problem(prob, payload, optimization_mode=optimization_mode)
+    # prob.check_partials(method="cs", compact_print=True)
 
     start_time = time.time()
     prob.run_aviary_problem()
@@ -287,6 +302,9 @@ def configure_problem(
         prob.driver.opt_settings["acceptable_constr_viol_tol"] = 1e-4
         prob.driver.opt_settings["nlp_scaling_method"] = "gradient-based"
         prob.driver.opt_settings["hessian_approximation"] = "limited-memory"
+        prob.driver.opt_settings["output_file"] = "ipopt_out.txt"
+        prob.driver.opt_settings["print_level"] = 5
+        # prob.driver.opt_settings[""]
     if driver_type == "SLSQP":
         prob.add_driver("SLSQP", max_iter=MAX_ITER)
 
@@ -311,15 +329,33 @@ def configure_problem(
         )
 
     if optimization_mode == "range":
-        # use all your fuel!
+        # add a model for range
+        prob.model.add_subsystem(
+            "range_objective",
+            om.ExecComp(
+                "reg_objective = actual_range + ascent_duration/30.",
+                reg_objective={"val": 0.0, "units": "unitless"},
+                ascent_duration={"units": "s", "shape": 1},
+                actual_range={"val": prob.model.target_range, "units": "NM"},
+            ),
+            promotes_inputs=[
+                ("actual_range", av.Mission.Summary.RANGE),
+                ("ascent_duration", av.Mission.Takeoff.ASCENT_DURATION),
+            ],
+            promotes_outputs=[("reg_objective", av.Mission.Objectives.RANGE)],
+        )
+        # add the custom objective to the problem
+        prob.model.add_objective(av.Mission.Objectives.RANGE, ref=3500)
+        print("Optimization mode: maximizing range")
+        # use all your fuel to go as far as possible
         prob.model.add_constraint(
             av.Mission.Constraints.EXCESS_FUEL_CAPACITY,
             lower=0,
             upper=0,
             ref=2000,
             units="lbm",
-            alias=True,
         )
+
     elif optimization_mode == "fuel_burned":
         taxi_fuel_burn = 443  # lbm, estimate for fuel burned during taxi, this value comes from Balikrishnan's linear models
         # save at least 5% fuel for reserves
@@ -334,18 +370,18 @@ def configure_problem(
             ),
             ref=2000,
             units="lbm",
-            alias=False,
         )
+        prob.model.add_objective(av.Mission.Summary.FUEL_BURNED, ref=20000)
+
     else:
         prob.model.add_constraint(
             av.Mission.Constraints.EXCESS_FUEL_CAPACITY,
             lower=0,
             ref=2000,
             units="lbm",
-            alias=True,
         )
+        prob.model.add_objective(av.Mission.Summary.FUEL_BURNED, ref=20000)
 
-    prob.add_objective(optimization_mode)
     prob.setup()
 
     prob.set_initial_guesses()
@@ -385,10 +421,4 @@ def strip_phase_info(
 
 
 if __name__ == "__main__":
-    main(
-        run_ASA_unscaled=False,
-        run_SAR_baseline=True,
-        run_SAR_optimized=False,
-        run_sensitivity=False,
-        payload=6000,
-    )
+    main()

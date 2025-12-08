@@ -35,7 +35,7 @@ aircraft:design:landing_to_takeoff_mass_ratio,0.65,unitless
 aircraft:design:lift_dependent_drag_coeff_factor,0.93,unitless
 aircraft:design:subsonic_drag_coeff_factor,0.95,unitless
 aircraft:design:supersonic_drag_coeff_factor,1,unitless
-# aircraft:design:touchdown_mass,1108976.4,lbm
+aircraft:design:touchdown_mass,50_000,lbm
 aircraft:design:use_alt_mass,False,unitless
 aircraft:design:zero_lift_drag_coeff_factor,0.96,unitless
 
@@ -56,10 +56,10 @@ aircraft:electrical:mass_scaler,1.0,unitless
 # aircraft:engine:num_engines,2,unitless
 # aircraft:engine:num_wing_engines,2,unitless
 # aircraft:engine:reference_mass,6000.0,lbm
-# aircraft:engine:reference_sls_thrust,22_200.5,lbf
+# aircraft:engine:reference_sls_thrust,20000.5,lbf
 # aircraft:engine:scale_factor,1.0,unitless
 # aircraft:engine:scale_mass,True,unitless
-# aircraft:engine:scaled_sls_thrust,22_200,lbf
+# aircraft:engine:scaled_sls_thrust,20000,lbf
 # aircraft:engine:subsonic_fuel_flow_scaler,1,unitless
 # aircraft:engine:supersonic_fuel_flow_scaler,1,unitless
 # aircraft:engine:wing_locations,0.25,unitless
@@ -210,9 +210,9 @@ aircraft:wing:wetted_area_scaler,1,unitless
 
 
 # MISSION SPECIFICS
-mission:constraints:max_mach,0.7,unitless
-mission:design:gross_mass,80_000,lbm
-mission:design:range,3200,NM
+mission:constraints:max_mach,0.8,unitless
+# mission:design:gross_mass,80_000,lbm
+# mission:design:range,3500,NM
 mission:design:thrust_takeoff_per_eng,0,lbf
 
 mission:landing:airport_altitude,0,ft
@@ -228,6 +228,8 @@ mission:landing:spoiler_lift_coefficient,-0.8,unitless
 
 mission:summary:cruise_mach,0.5,unitless
 mission:summary:fuel_flow_scaler,1,unitless
+mission:design:range,3500,NM
+mission:design:gross_mass,80000,lbm
 
 mission:takeoff:airport_altitude,0,ft
 mission:takeoff:angle_of_attack_runway,0,deg
