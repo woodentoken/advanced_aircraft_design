@@ -75,7 +75,7 @@ aircraft:fuel:num_tanks,7,unitless
 aircraft:fuel:total_capacity,33136.4,lbm
 aircraft:fuel:unusable_fuel_mass_scaler,1,unitless
 aircraft:fuel:wing_fuel_capacity,33136.4,lbm
-aircraft:fuel:ignore_fuel_capacity_constraint,False,unitless
+aircraft:fuel:ignore_fuel_capacity_constraint,True,unitless
 
 aircraft:furnishings:mass_scaler,0.81859,unitless
 aircraft:fuselage:laminar_flow_lower,0,unitless

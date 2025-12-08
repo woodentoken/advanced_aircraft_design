@@ -85,16 +85,23 @@ def main(
         summaries.append(optimized_summary)
 
     summary_dataframe = pl.DataFrame(summaries)
-    unscaled_burn = summary_dataframe.filter(pl.col("case") == "ASA'")["burned_fuel"][0]
-    baseline_burn = summary_dataframe.filter(pl.col("case") == "SAR")["burned_fuel"][0]
-
-    summary_dataframe = summary_dataframe.with_columns(
-        (pl.col("burned_fuel") / baseline_burn).alias("fuel_burn_ratio_SAR"),
-        (pl.col("burned_fuel") / unscaled_burn).alias("fuel_burn_ratio_ASA'"),
-    )
-
     print(summary_dataframe)
-    summary_dataframe.write_csv("sardine_optimization_summary.csv")
+
+    # print all the summaries if all three runs were done
+    if np.all([run_ASA_unscaled, run_SAR_baseline, run_SAR_optimized]):
+        unscaled_burn = summary_dataframe.filter(pl.col("case") == "ASA'")[
+            "burned_fuel"
+        ][0]
+        baseline_burn = summary_dataframe.filter(pl.col("case") == "SAR")[
+            "burned_fuel"
+        ][0]
+
+        summary_dataframe = summary_dataframe.with_columns(
+            (pl.col("burned_fuel") / baseline_burn).alias("fuel_burn_ratio_SAR"),
+            (pl.col("burned_fuel") / unscaled_burn).alias("fuel_burn_ratio_ASA'"),
+        )
+
+        summary_dataframe.write_csv("sardine_optimization_summary.csv")
 
     if run_sensitivity:
         print("[bold purple]Running sensitivity analysis...[/]")
@@ -327,7 +334,15 @@ def configure_problem(
             ),
             ref=2000,
             units="lbm",
-            # alias=True,
+            alias=False,
+        )
+    else:
+        prob.model.add_constraint(
+            av.Mission.Constraints.EXCESS_FUEL_CAPACITY,
+            lower=0,
+            ref=2000,
+            units="lbm",
+            alias=True,
         )
 
     prob.add_objective(optimization_mode)
@@ -371,9 +386,9 @@ def strip_phase_info(
 
 if __name__ == "__main__":
     main(
-        run_ASA_unscaled=True,
+        run_ASA_unscaled=False,
         run_SAR_baseline=True,
-        run_SAR_optimized=True,
+        run_SAR_optimized=False,
         run_sensitivity=False,
         payload=6000,
     )

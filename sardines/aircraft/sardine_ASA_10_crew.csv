@@ -102,7 +102,7 @@ aircraft:fuel:total_capacity,22_000.0,lbm
 aircraft:fuel:unusable_fuel_mass_scaler,1,unitless
 aircraft:fuel:wing_fuel_capacity,12_000.0,lbm
 aircraft:fuel:wing_fuel_fraction,0.5,unitless
-aircraft:fuel:ignore_fuel_capacity_constraint,False,unitless
+aircraft:fuel:ignore_fuel_capacity_constraint,True,unitless
 
 # austere interior, so use a small scaler for furnishings
 aircraft:furnishings:mass_scaler,0.5,unitless
