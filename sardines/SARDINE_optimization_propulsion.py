@@ -43,19 +43,23 @@ prob.add_design_variables()
 
 # Propulsion design variables
 prob.model.add_design_var(
-    av.Aircraft.Engine.WING_LOCATIONS, lower=0.1, upper=0.8, ref=0.289682918
+    av.Aircraft.Engine.WING_LOCATIONS, lower=0.1, upper=0.8, ref=0.25
 )
 prob.model.add_design_var(
-    av.Aircraft.Engine.MASS_SCALER, lower=0.8, upper=1.6, ref=1.15
+    av.Aircraft.Engine.MASS_SCALER, lower=0.8, upper=1
 )
 prob.model.add_design_var(
-    av.Aircraft.Engine.SCALE_FACTOR, lower=0.25, upper=1.0, ref=0.99997747798473
+    av.Aircraft.Engine.SCALE_FACTOR, lower=0.25, upper=2.0, ref=1.0
 )
+# prob.model.add_design_var(
+#     av.Aircraft.Engine.SCALED_SLS_THRUST, lower=15000, upper=25000, ref=20000
+# )
 
 # Add constraints
 # Constrain wing loading and thrust-to-weight ratio
-prob.model.add_constraint(av.Aircraft.Design.WING_LOADING, lower=70, units='lbf/ft**2')
-prob.model.add_constraint(av.Aircraft.Design.THRUST_TO_WEIGHT_RATIO, lower=0.35)
+# prob.model.add_constraint(av.Aircraft.Design.WING_LOADING, lower = 60, units='lbf/ft**2')
+prob.model.add_constraint(av.Aircraft.Engine.SCALED_SLS_THRUST, upper = 22000)
+prob.model.add_constraint(av.Aircraft.Design.THRUST_TO_WEIGHT_RATIO, upper = 0.7)
 
 prob.add_objective('fuel_burned')
 prob.setup()
