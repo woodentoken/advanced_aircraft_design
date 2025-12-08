@@ -30,14 +30,14 @@ MAX_ITER = 100
 
 
 def main(
-    run_baseline=True,
-    run_modified=True,
-    run_optimized=True,
+    run_ASA_unscaled=True,
+    run_SAR_baseline=True,
+    run_SAR_optimized=True,
     run_sensitivity=True,
     payload=0,
 ):
-    if run_baseline:
-        print("[bold blue]Running basic analysis...[/]")
+    if run_ASA_unscaled:
+        print("[bold blue]Running analysis on unscaled ASA...[/]")
         basic_summary = run_analysis(
             aircraft=base_ASA,
             phase_info=generate_basic_SAR_profile(
@@ -49,8 +49,8 @@ def main(
             payload=payload,
         )
 
-    if run_modified:
-        print("[bold blue]Running modified basic analysis...[/]")
+    if run_SAR_baseline:
+        print("[bold orange]Running analysis on scaled ASA (SAR baseline)...[/]")
         basic_summary = run_analysis(
             aircraft=sardine_ASA,
             phase_info=generate_basic_SAR_profile(
@@ -62,8 +62,10 @@ def main(
             payload=payload,
         )
 
-    if run_optimized:
-        print("[bold green]Running optimized analysis...[/]")
+    if run_SAR_optimized:
+        print(
+            "[bold green]Running analysis on scaled ASA with optimizations(SAR optimized)...[/]"
+        )
         optimized_summary = run_analysis(
             aircraft=sardine_ASA,
             phase_info=generate_SAR_profile(
@@ -267,8 +269,6 @@ def configure_problem(
 
     prob.add_design_variables()
 
-    taxi_fuel_burn = 443  # lbm, estimate for fuel burned during taxi
-
     if payload:
         # the most reliable way to set a fixed payload is to set the value and then fix it as a design variable
         prob.aviary_inputs.set_val(
@@ -295,13 +295,13 @@ def configure_problem(
             alias=True,
         )
     elif optimization_mode == "fuel_burned":
-        print("fuck")
+        taxi_fuel_burn = 443  # lbm, estimate for fuel burned during taxi, this value comes from Balikrishnan's linear models
         # save at least 5% fuel for reserves
         prob.model.add_constraint(
             av.Mission.Constraints.EXCESS_FUEL_CAPACITY,
             lower=taxi_fuel_burn
             + (
-                0.05
+                0.05  # 5% of capacity
                 * prob.aviary_inputs.get_val(
                     av.Aircraft.Fuel.TOTAL_CAPACITY, units="lbm"
                 )
@@ -352,9 +352,9 @@ def strip_phase_info(
 
 if __name__ == "__main__":
     main(
-        run_baseline=True,
-        run_modified=False,
-        run_optimized=False,
+        run_ASA_unscaled=True,
+        run_SAR_baseline=True,
+        run_SAR_optimized=False,
         run_sensitivity=False,
         payload=6000,
     )
