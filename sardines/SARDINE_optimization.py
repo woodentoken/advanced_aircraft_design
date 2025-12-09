@@ -2,7 +2,6 @@ import csv
 import time
 from copy import deepcopy
 from itertools import product
-import csv
 
 import aviary.api as av
 import dymos as dm
@@ -23,14 +22,18 @@ from missions.optimization import (
 )
 from missions.sensitivity import phase_info as sensitivity_profile
 
-
 # FLOPS models
 base_ASA = "aircraft/baseline_ASA_10_crew.csv"
 sardine_ASA = "aircraft/sardine_ASA_10_crew.csv"
 
 
 # DETERMINE WHICH OPTIMIZATIONS TO RUN
-OPTIMIZATIONS = ["geometry", "propulsion", "mass"]
+OPTIMIZATIONS = [
+    "mass",
+    "geometry",
+    "propulsion",
+]  # options: mass, geometry, propulsion
+OPTIMIZATIONS = []  # no optimizations
 
 # CONFIG
 DRIVER_TYPE = "IPOPT"
@@ -40,10 +43,10 @@ MAX_ITER = 200
 # change the defaults here to run different cases (you can run multiple cases in one go)
 def main(
     run_ASA_unscaled=False,
-    run_SAR_baseline=True,
-    run_SAR_optimized=False,
+    run_SAR_baseline=False,
+    run_SAR_optimized=True,  # optimizes mach and altitude
     run_sensitivity=False,
-    payload=6000,
+    payload=6000,  # lb
 ):
     summaries = []
     if run_ASA_unscaled:
@@ -308,6 +311,7 @@ def configure_problem(
     prob.add_design_variables()
 
     if "mass" in OPTIMIZATIONS:
+        print("[bold green]Adding mass/cost system and design variables...[/]")
         # Default mass_scaler's
         fus0 = model.aviary_inputs.get_item("aircraft:fuselage:mass_scaler")[0]
         wing0 = model.aviary_inputs.get_item("aircraft:wing:mass_scaler")[0]
@@ -377,7 +381,7 @@ def configure_problem(
         prob.model.add_constraint(av.Aircraft.Design.THRUST_TO_WEIGHT_RATIO, upper=0.7)
 
     if "geometry" in OPTIMIZATIONS:
-        print("[bold green]Adding geometry design variables...[/]")
+        print("[bold green]Adding geometry system and design variables...[/]")
         feselage_length = prob.model.aviary_inputs.get_item("aircraft:fuselage:length")[
             0
         ]
