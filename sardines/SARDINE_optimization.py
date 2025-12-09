@@ -22,31 +22,6 @@ from missions.optimization import (
 from missions.sensitivity import phase_info as sensitivity_he
 
 
-class WingAreaFromAR(om.ExplicitComponent):
-    """
-    Compute wing area from fixed span and AR:
-        area = span0**2 / AR
-    """
-
-    def initialize(self):
-        self.options.declare('span0', types=float, desc='Fixed wing span [ft]')
-
-    def setup(self):
-        self.add_input('AR', val=10.0)          # aspect ratio
-        self.add_output('wing_area', val=900.0)  # wing area [ft**2]
-
-        self.declare_partials('wing_area', 'AR')
-
-    def compute(self, inputs, outputs):
-        AR = inputs['AR']
-        span0 = self.options['span0']
-        outputs['wing_area'] = span0 * span0 / AR
-
-    def compute_partials(self, inputs, partials):
-        AR = inputs['AR']
-        span0 = self.options['span0']
-        partials['wing_area', 'AR'] = - span0 * span0 / (AR**2)
-
 # FLOPS models
 base_ASA = "aircraft/baseline_ASA_10_crew.csv"
 sardine_ASA = "aircraft/sardine_ASA_10_crew.csv"
@@ -54,6 +29,8 @@ sardine_ASA = "aircraft/sardine_ASA_10_crew.csv"
 # CONFIG
 DRIVER_TYPE = "IPOPT"
 MAX_ITER = 200
+
+OPTIMIZATIONS = ["propulsion", "mass"]
 
 
 # change the defaults here to run different cases (you can run multiple cases in one go)
@@ -134,6 +111,279 @@ def main(
     if run_sensitivity:
         print("[bold purple]Running sensitivity analysis...[/]")
         sensitivity_analysis(sensitivity_he)
+
+
+class WingAreaFromAR(om.ExplicitComponent):
+    """
+    Compute wing area from fixed span and AR:
+        area = span0**2 / AR
+    """
+
+    def initialize(self):
+        self.options.declare("span0", types=float, desc="Fixed wing span [ft]")
+
+    def setup(self):
+        self.add_input("AR", val=10.0)  # aspect ratio
+        self.add_output("wing_area", val=900.0)  # wing area [ft**2]
+
+        self.declare_partials("wing_area", "AR")
+
+    def compute(self, inputs, outputs):
+        AR = inputs["AR"]
+        span0 = self.options["span0"]
+        outputs["wing_area"] = span0 * span0 / AR
+
+    def compute_partials(self, inputs, partials):
+        AR = inputs["AR"]
+        span0 = self.options["span0"]
+        partials["wing_area", "AR"] = -span0 * span0 / (AR**2)
+
+
+def run_analysis(
+    phase_info,
+    aircraft,
+    optimization_mode="fuel_burned",
+    payload=0,
+    remove_altitudes=False,
+    remove_mach=False,
+    mach_override=None,
+):
+    # main function to run an Aviary problem with given phase info and aircraft model
+    prob = av.AviaryProblem()
+
+    # optionally remove altitude and/or mach from phase info
+    if remove_altitudes or remove_mach:
+        phase_info = strip_phase_info(
+            phase_info,
+            remove_altitudes=remove_altitudes,
+            remove_mach=remove_mach,
+        )
+
+    ### Problem definition
+    prob.load_inputs(aircraft, phase_info)
+    if mach_override is not None:
+        prob.model.aviary_inputs.set_val(av.Mission.Summary.CRUISE_MACH, mach_override)
+
+    # configure problem with payload and optimization mode and run boilerplate code
+    prob = configure_problem(prob, payload, optimization_mode=optimization_mode)
+    # prob.check_partials(method="cs", compact_print=True)
+
+    start_time = time.time()
+    prob.run_aviary_problem()
+    end_time = time.time()
+    print(f"Total run time: {end_time - start_time} seconds")
+
+    # post mission reporting
+    success = prob.result.success
+    design_mass = prob.get_val(av.Mission.Design.GROSS_MASS, units="lb")[0]
+    burned_fuel = prob.get_val(av.Mission.Summary.FUEL_BURNED, units="lb")[0]
+    final_mass = prob.get_val(av.Mission.Summary.FINAL_MASS, units="lb")[0]
+    flown_range = prob.get_val(av.Mission.Summary.RANGE, units="NM")[0]
+    payload_total = prob.get_val(
+        av.Aircraft.CrewPayload.TOTAL_PAYLOAD_MASS, units="lb"
+    )[0]
+
+    print(f"Mission success: {success}")
+    print(f"Design mass: {design_mass} lb")
+    print(f"Fuel burned: {burned_fuel} lb")
+    print(f"Final mass: {final_mass} lb")
+    print(f"Flown range: {flown_range} nmi")
+    print(f"Payload: {payload_total} lb")
+
+    summary = {
+        "success": success,
+        "design_mass": design_mass,
+        "burned_fuel": burned_fuel,
+        "final_mass": final_mass,
+        "flown_range": flown_range,
+        "payload_total": payload_total,
+    }
+
+    AR_opt = prob.get_val("aircraft:wing:aspect_ratio")[0]
+    span = prob.get_val("aircraft:wing:span", units="ft")[0]
+    area = prob.get_val("aircraft:wing:area", units="ft**2")[0]
+    taper = prob.get_val("aircraft:wing:taper_ratio")[0]
+    sweep = prob.get_val("aircraft:wing:sweep", units="deg")[0]
+    tc = prob.get_val("aircraft:wing:thickness_to_chord")[0]
+    fuselage_len = prob.get_val("aircraft:fuselage:length", units="ft")[0]
+
+    c_ref = area / span
+    c_root = 2.0 * area / (span * (1.0 + taper))  # trapezoid assumption
+
+    print("\n=== Geometry summary for aero teammate ===")
+    print(f"Fuselage Length           = {fuselage_len:.4f} ft")
+    print(f"Reference area S_ref      = {area:.3f} ft^2")
+    print(f"Reference span b_ref      = {span:.3f} ft")
+    print(f"Reference chord c_ref     = {c_ref:.3f} ft")
+    print(f"Root chord c_root         = {c_root:.3f} ft")
+    print(f"Taper ratio lambda        = {taper:.4f}")
+    print(f"Sweep                     = {sweep:.3f} deg")
+    print(f"Aspect ratio AR           = {AR_opt:.4f}")
+    print(f"Thickness-to-chord (mean) = {tc:.4f}")
+
+    return summary
+
+
+def configure_problem(
+    prob,
+    payload,
+    driver_type=DRIVER_TYPE,
+    optimization_mode="fuel_burned",
+):
+    # Configure the OpenMDAO problem with driver, design variables, objectives, etc.
+    # most of this is boilerplate code for Aviary problems
+
+    # optimizer and iteration limit are optional provided here
+    if driver_type == "IPOPT":
+        prob.add_driver("IPOPT", max_iter=MAX_ITER, verbosity=2)
+        prob.driver.opt_settings["tol"] = 1e-4
+        prob.driver.opt_settings["constr_viol_tol"] = 1e-4
+        prob.driver.opt_settings["acceptable_tol"] = 1e-3
+        prob.driver.opt_settings["acceptable_constr_viol_tol"] = 1e-4
+        prob.driver.opt_settings["nlp_scaling_method"] = "gradient-based"
+        prob.driver.opt_settings["hessian_approximation"] = "limited-memory"
+        prob.driver.opt_settings["output_file"] = "ipopt_out.txt"
+        prob.driver.opt_settings["print_level"] = 5
+        # prob.driver.opt_settings[""]
+    if driver_type == "SLSQP":
+        prob.add_driver("SLSQP", max_iter=MAX_ITER)
+
+    prob.check_and_preprocess_inputs()
+    prob.build_model()
+
+    model = prob.model
+    prob.add_design_variables()
+
+    if "geometry" in OPTIMIZATIONS:
+        print("[bold green]Adding geometry design variables...[/]")
+        feselage_length = prob.model.aviary_inputs.get_item("aircraft:fuselage:length")[
+            0
+        ]
+        wing_thickness_to_chord = prob.model.aviary_inputs.get_item(
+            "aircraft:wing:thickness_to_chord"
+        )[0]
+        wing_aspect_ratio = prob.model.aviary_inputs.get_item(
+            "aircraft:wing:aspect_ratio"
+        )[0]
+        wing_sweep = prob.model.aviary_inputs.get_item("aircraft:wing:sweep")[0]
+        wing_taper_ratio = prob.model.aviary_inputs.get_item(
+            "aircraft:wing:taper_ratio"
+        )[0]
+        wing_span = prob.model.aviary_inputs.get_item("aircraft:wing:span")[0]
+
+        model.add_subsystem(
+            "wing_area_from_AR",
+            WingAreaFromAR(span0=wing_span),
+            promotes_inputs=[("AR", "aircraft:wing:aspect_ratio")],
+            promotes_outputs=["wing_area"],
+        )
+        model.connect("wing_area", "aircraft:wing:area")
+
+        lower_bound = 0.8
+        upper_bound = 1.4
+
+        prob.model.add_design_var(
+            "aircraft:fuselage:length",
+            lower=lower_bound * feselage_length,
+            upper=upper_bound * feselage_length,
+            ref=feselage_length,
+        )
+
+        prob.model.add_design_var(
+            "aircraft:wing:thickness_to_chord",
+            lower=lower_bound * wing_thickness_to_chord,
+            upper=upper_bound * wing_thickness_to_chord,
+            ref=wing_thickness_to_chord,
+        )
+
+        prob.model.add_design_var(
+            "aircraft:wing:aspect_ratio",
+            lower=lower_bound * wing_aspect_ratio,
+            upper=upper_bound * wing_aspect_ratio,
+            ref=wing_aspect_ratio,
+        )
+
+        prob.model.add_design_var(
+            "aircraft:wing:sweep",
+            lower_bound * wing_sweep,
+            upper_bound * wing_sweep,
+            ref=wing_sweep,
+        )
+
+    if payload:
+        # the most reliable way to set a fixed payload is to set the value and then fix it as a design variable
+        prob.aviary_inputs.set_val(
+            av.Aircraft.CrewPayload.TOTAL_PAYLOAD_MASS,
+            payload,
+            units="lb",
+        )
+        prob.add_design_var_default(
+            av.Aircraft.CrewPayload.TOTAL_PAYLOAD_MASS,
+            lower=payload,
+            upper=payload,
+            units="lb",
+            default_val=payload,
+        )
+
+    if optimization_mode == "range":
+        # add a model for range
+        prob.model.add_subsystem(
+            "range_objective",
+            om.ExecComp(
+                "reg_objective = actual_range + ascent_duration/30.",
+                reg_objective={"val": 0.0, "units": "unitless"},
+                ascent_duration={"units": "s", "shape": 1},
+                actual_range={"val": prob.model.target_range, "units": "NM"},
+            ),
+            promotes_inputs=[
+                ("actual_range", av.Mission.Summary.RANGE),
+                ("ascent_duration", av.Mission.Takeoff.ASCENT_DURATION),
+            ],
+            promotes_outputs=[("reg_objective", av.Mission.Objectives.RANGE)],
+        )
+        # add the custom objective to the problem
+        prob.model.add_objective(av.Mission.Objectives.RANGE, ref=3500)
+        print("Optimization mode: maximizing range")
+        # use all your fuel to go as far as possible
+        prob.model.add_constraint(
+            av.Mission.Constraints.EXCESS_FUEL_CAPACITY,
+            lower=0,
+            upper=0,
+            ref=2000,
+            units="lbm",
+        )
+
+    elif optimization_mode == "fuel_burned":
+        taxi_fuel_burn = 443  # lbm, estimate for fuel burned during taxi, this value comes from Balikrishnan's linear models
+        # save at least 5% fuel for reserves
+        prob.model.add_constraint(
+            av.Mission.Constraints.EXCESS_FUEL_CAPACITY,
+            lower=taxi_fuel_burn
+            + (
+                0.05  # 5% of capacity
+                * prob.aviary_inputs.get_val(
+                    av.Aircraft.Fuel.TOTAL_CAPACITY, units="lbm"
+                )
+            ),
+            ref=2000,
+            units="lbm",
+        )
+        prob.model.add_objective(av.Mission.Summary.FUEL_BURNED, ref=20000)
+
+    else:
+        prob.model.add_constraint(
+            av.Mission.Constraints.EXCESS_FUEL_CAPACITY,
+            lower=0,
+            ref=2000,
+            units="lbm",
+        )
+        prob.model.add_objective(av.Mission.Summary.FUEL_BURNED, ref=20000)
+
+    prob.setup()
+
+    prob.set_initial_guesses()
+
+    return prob
 
 
 def sensitivity_analysis(phase_info=sensitivity_he):
@@ -269,293 +519,37 @@ def sensitivity_analysis(phase_info=sensitivity_he):
 
 
 ### RUN AVIARY
-def run_analysis(
-    phase_info,
-    aircraft,
-    optimization_mode="fuel_burned",
-    payload=0,
-    remove_altitudes=False,
-    remove_mach=False,
-    mach_override=None,
-):
-    # main function to run an Aviary problem with given phase info and aircraft model
-    prob = av.AviaryProblem()
-
-    # optionally remove altitude and/or mach from phase info
-    if remove_altitudes or remove_mach:
-        phase_info = strip_phase_info(
-            phase_info,
-            remove_altitudes=remove_altitudes,
-            remove_mach=remove_mach,
-        )
-
-    ### Problem definition
-    prob.load_inputs(aircraft, phase_info)
-    if mach_override is not None:
-        prob.model.aviary_inputs.set_val(av.Mission.Summary.CRUISE_MACH, mach_override)
-
-    # configure problem with payload and optimization mode and run boilerplate code
-    prob = configure_problem(prob, payload, optimization_mode=optimization_mode)
-    # prob.check_partials(method="cs", compact_print=True)
-
-    start_time = time.time()
-    prob.run_aviary_problem()
-    end_time = time.time()
-    print(f"Total run time: {end_time - start_time} seconds")
-
-    # post mission reporting
-    success = prob.result.success
-    design_mass = prob.get_val(av.Mission.Design.GROSS_MASS, units="lb")[0]
-    burned_fuel = prob.get_val(av.Mission.Summary.FUEL_BURNED, units="lb")[0]
-    final_mass = prob.get_val(av.Mission.Summary.FINAL_MASS, units="lb")[0]
-    flown_range = prob.get_val(av.Mission.Summary.RANGE, units="NM")[0]
-    payload_total = prob.get_val(
-        av.Aircraft.CrewPayload.TOTAL_PAYLOAD_MASS, units="lb"
-    )[0]
-
-    print(f"Mission success: {success}")
-    print(f"Design mass: {design_mass} lb")
-    print(f"Fuel burned: {burned_fuel} lb")
-    print(f"Final mass: {final_mass} lb")
-    print(f"Flown range: {flown_range} nmi")
-    print(f"Payload: {payload_total} lb")
-
-    summary = {
-        "success": success,
-        "design_mass": design_mass,
-        "burned_fuel": burned_fuel,
-        "final_mass": final_mass,
-        "flown_range": flown_range,
-        "payload_total": payload_total,
-    }
-
-    AR_opt = prob.get_val('aircraft:wing:aspect_ratio')[0]
-    span   = prob.get_val('aircraft:wing:span',  units='ft')[0]
-    area   = prob.get_val('aircraft:wing:area',  units='ft**2')[0]
-    taper  = prob.get_val('aircraft:wing:taper_ratio')[0]
-    sweep  = prob.get_val('aircraft:wing:sweep', units='deg')[0]
-    tc     = prob.get_val('aircraft:wing:thickness_to_chord')[0]
-    fuselage_len = prob.get_val('aircraft:fuselage:length', units='ft')[0]
-
-    c_ref  = area / span
-    c_root = 2.0 * area / (span * (1.0 + taper)) # trapezoid assumption
-
-    print("\n=== Geometry summary for aero teammate ===")
-    print(f"Fuselage Length           = {fuselage_len:.4f} ft")
-    print(f"Reference area S_ref      = {area:.3f} ft^2")
-    print(f"Reference span b_ref      = {span:.3f} ft")
-    print(f"Reference chord c_ref     = {c_ref:.3f} ft")
-    print(f"Root chord c_root         = {c_root:.3f} ft")
-    print(f"Taper ratio lambda        = {taper:.4f}")
-    print(f"Sweep                     = {sweep:.3f} deg")
-    print(f"Aspect ratio AR           = {AR_opt:.4f}")
-    print(f"Thickness-to-chord (mean) = {tc:.4f}")
-
-    # if aircraft == sardine_ASA:
-    #     csv_filename = "optimized_geometry_sardine_to_aero.csv"
-    # elif aircraft == base_ASA:
-    #     csv_filename = "optimized_geometry_asa.csv"
-    # else:
-    #     csv_filename = "optimized_geometry.csv"
-
-    # with open(csv_filename, mode="w", newline="") as f:
-    #     writer = csv.writer(f)
-
-    #     writer.writerow(["Parameter", "Value", "Units"])
-
-    #     writer.writerow(["Reference Area", f"{area:.6f}", "ft^2"])
-    #     writer.writerow(["Reference Chord", f"{c_ref:.6f}", "ft"])
-    #     writer.writerow(["Reference Span", f"{span:.6f}", "ft"])
-    #     writer.writerow(["Root Chord", f"{c_root:.6f}", "ft"])
-    #     writer.writerow(["Taper Ratio", f"{taper:.6f}", "-"])
-    #     writer.writerow(["Sweep", f"{sweep:.6f}", "deg"])
-    #     writer.writerow(["Aspect Ratio", f"{AR_opt:.6f}", "-"])
-
-    # print(f"\nCSV saved to: {csv_filename}")
-
-    return summary
 
 
-def configure_problem(
-    prob, payload, driver_type=DRIVER_TYPE, optimization_mode="fuel_burned"
-):
-    # Configure the OpenMDAO problem with driver, design variables, objectives, etc.
-    # most of this is boilerplate code for Aviary problems
+# def strip_phase_info(
+#     phase_info, remove_altitudes=False, remove_mach=False, remove_bounds=False
+# ):
+#     # convenience function to remove altitude and/or mach from phase info, which should let the optimizer decide these values
+#     modified_phase_info = deepcopy(phase_info)
+#     if remove_altitudes:
+#         for phase, config in modified_phase_info.items():
+#             if "user_options" not in config.keys():
+#                 continue
+#             else:
+#                 if "altitude_final" in config["user_options"]:
+#                     del config["user_options"]["altitude_final"]
+#                 if "altitude_initial" in config["user_options"]:
+#                     del config["user_options"]["altitude_initial"]
+#                 if "altitude_bounds" in config["user_options"] and remove_bounds:
+#                     del config["user_options"]["altitude_bounds"]
 
-    # optimizer and iteration limit are optional provided here
-    if driver_type == "IPOPT":
-        prob.add_driver("IPOPT", max_iter=MAX_ITER, verbosity=2)
-        prob.driver.opt_settings["tol"] = 1e-4
-        prob.driver.opt_settings["constr_viol_tol"] = 1e-4
-        prob.driver.opt_settings["acceptable_tol"] = 1e-3
-        prob.driver.opt_settings["acceptable_constr_viol_tol"] = 1e-4
-        prob.driver.opt_settings["nlp_scaling_method"] = "gradient-based"
-        prob.driver.opt_settings["hessian_approximation"] = "limited-memory"
-        prob.driver.opt_settings["output_file"] = "ipopt_out.txt"
-        prob.driver.opt_settings["print_level"] = 5
-        # prob.driver.opt_settings[""]
-    if driver_type == "SLSQP":
-        prob.add_driver("SLSQP", max_iter=MAX_ITER)
-
-    prob.check_and_preprocess_inputs()
-    prob.build_model()
-
-    model = prob.model
-
-    feselage_length = prob.model.aviary_inputs.get_item('aircraft:fuselage:length')[0]
-    wing_thickness_to_chord = prob.model.aviary_inputs.get_item('aircraft:wing:thickness_to_chord')[0]
-    wing_aspect_ratio = prob.model.aviary_inputs.get_item('aircraft:wing:aspect_ratio')[0]
-    wing_sweep = prob.model.aviary_inputs.get_item('aircraft:wing:sweep')[0]
-    wing_taper_ratio = prob.model.aviary_inputs.get_item('aircraft:wing:taper_ratio')[0]
-    wing_span = prob.model.aviary_inputs.get_item('aircraft:wing:span')[0]
-
-    model.add_subsystem(
-        'wing_area_from_AR',
-        WingAreaFromAR(span0=wing_span),
-        promotes_inputs=[('AR', 'aircraft:wing:aspect_ratio')],
-        promotes_outputs=['wing_area'],
-    )
-    model.connect('wing_area', 'aircraft:wing:area')
-
-    lower_bound = 0.8
-    upper_bound = 1.4
-
-
-    prob.add_design_variables()
-
-    prob.model.add_design_var(
-        'aircraft:fuselage:length',
-        lower= lower_bound * feselage_length,
-        upper= upper_bound* feselage_length,
-        ref = feselage_length
-    )
-
-    prob.model.add_design_var(
-        'aircraft:wing:thickness_to_chord',
-        lower=lower_bound * wing_thickness_to_chord,
-        upper=upper_bound * wing_thickness_to_chord,
-        ref = wing_thickness_to_chord
-    )
-
-    prob.model.add_design_var(
-        'aircraft:wing:aspect_ratio',
-        lower=lower_bound * wing_aspect_ratio,
-        upper=upper_bound * wing_aspect_ratio,
-        ref = wing_aspect_ratio
-    )
-
-    prob.model.add_design_var(
-        'aircraft:wing:sweep',
-        lower_bound * wing_sweep,
-        upper_bound * wing_sweep,
-        ref = wing_sweep
-    )
-
-    if payload:
-        # the most reliable way to set a fixed payload is to set the value and then fix it as a design variable
-        prob.aviary_inputs.set_val(
-            av.Aircraft.CrewPayload.TOTAL_PAYLOAD_MASS,
-            payload,
-            units="lb",
-        )
-        prob.add_design_var_default(
-            av.Aircraft.CrewPayload.TOTAL_PAYLOAD_MASS,
-            lower=payload,
-            upper=payload,
-            units="lb",
-            default_val=payload,
-        )
-
-    if optimization_mode == "range":
-        # add a model for range
-        prob.model.add_subsystem(
-            "range_objective",
-            om.ExecComp(
-                "reg_objective = actual_range + ascent_duration/30.",
-                reg_objective={"val": 0.0, "units": "unitless"},
-                ascent_duration={"units": "s", "shape": 1},
-                actual_range={"val": prob.model.target_range, "units": "NM"},
-            ),
-            promotes_inputs=[
-                ("actual_range", av.Mission.Summary.RANGE),
-                ("ascent_duration", av.Mission.Takeoff.ASCENT_DURATION),
-            ],
-            promotes_outputs=[("reg_objective", av.Mission.Objectives.RANGE)],
-        )
-        # add the custom objective to the problem
-        prob.model.add_objective(av.Mission.Objectives.RANGE, ref=3500)
-        print("Optimization mode: maximizing range")
-        # use all your fuel to go as far as possible
-        prob.model.add_constraint(
-            av.Mission.Constraints.EXCESS_FUEL_CAPACITY,
-            lower=0,
-            upper=0,
-            ref=2000,
-            units="lbm",
-        )
-
-    elif optimization_mode == "fuel_burned":
-        taxi_fuel_burn = 443  # lbm, estimate for fuel burned during taxi, this value comes from Balikrishnan's linear models
-        # save at least 5% fuel for reserves
-        prob.model.add_constraint(
-            av.Mission.Constraints.EXCESS_FUEL_CAPACITY,
-            lower=taxi_fuel_burn
-            + (
-                0.05  # 5% of capacity
-                * prob.aviary_inputs.get_val(
-                    av.Aircraft.Fuel.TOTAL_CAPACITY, units="lbm"
-                )
-            ),
-            ref=2000,
-            units="lbm",
-        )
-        prob.model.add_objective(av.Mission.Summary.FUEL_BURNED, ref=20000)
-
-    else:
-        prob.model.add_constraint(
-            av.Mission.Constraints.EXCESS_FUEL_CAPACITY,
-            lower=0,
-            ref=2000,
-            units="lbm",
-        )
-        prob.model.add_objective(av.Mission.Summary.FUEL_BURNED, ref=20000)
-
-    prob.setup()
-
-    prob.set_initial_guesses()
-
-    return prob
-
-
-def strip_phase_info(
-    phase_info, remove_altitudes=False, remove_mach=False, remove_bounds=False
-):
-    # convenience function to remove altitude and/or mach from phase info, which should let the optimizer decide these values
-    modified_phase_info = deepcopy(phase_info)
-    if remove_altitudes:
-        for phase, config in modified_phase_info.items():
-            if "user_options" not in config.keys():
-                continue
-            else:
-                if "altitude_final" in config["user_options"]:
-                    del config["user_options"]["altitude_final"]
-                if "altitude_initial" in config["user_options"]:
-                    del config["user_options"]["altitude_initial"]
-                if "altitude_bounds" in config["user_options"] and remove_bounds:
-                    del config["user_options"]["altitude_bounds"]
-
-    if remove_mach:
-        for phase, config in modified_phase_info.items():
-            if "user_options" not in config.keys():
-                continue
-            else:
-                if "mach_final" in config["user_options"]:
-                    del config["user_options"]["mach_final"]
-                if "mach_initial" in config["user_options"]:
-                    del config["user_options"]["mach_initial"]
-                if "mach_bounds" in config["user_options"] and remove_bounds:
-                    del config["user_options"]["mach_bounds"]
-    return modified_phase_info
+#     if remove_mach:
+#         for phase, config in modified_phase_info.items():
+#             if "user_options" not in config.keys():
+#                 continue
+#             else:
+#                 if "mach_final" in config["user_options"]:
+#                     del config["user_options"]["mach_final"]
+#                 if "mach_initial" in config["user_options"]:
+#                     del config["user_options"]["mach_initial"]
+#                 if "mach_bounds" in config["user_options"] and remove_bounds:
+#                     del config["user_options"]["mach_bounds"]
+#     return modified_phase_info
 
 
 if __name__ == "__main__":
