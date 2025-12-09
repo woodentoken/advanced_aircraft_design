@@ -1,49 +1,48 @@
-# Advanced Aircraft Design
+# Advanced Aircraft Design - SARDINES
 
-This repository contains the course materials and assignments for the Advanced Aircraft Design course offered at UC Davis during Fall of 2025.
+This repository contains the course materials and assignments for Team D (SARDINES) design process for the Advanced Aircraft Design course offered at UC Davis during Fall of 2025. leb by Dr. Christina Harvey.
 
-The course focuses on the principles and practices of designing advanced aircraft, covering topics such as aerodynamics, structures, propulsion, and systems integration.
+The course focuses on the principles and practices of designing advanced aircraft, covering topics such as aerodynamics, structures, propulsion, and systems integration. And relies on Aviary (https://github.com/OpenMDAO/Aviary), NASA's multidisciplinary aircraft design and optimization tool.
 
-The course is taught by Dr. Christina Harvey.
+## Contributors and Roles
 
-# Contributors
+- Propulsion: Joshua Booth
+- Mission Analysis: Kaleb Bordner
+- Aerodynamics: Nick Rusali
+- Mass/Cost: Sherwin Shi
+- Geometry: Xingmin Han
 
-- Joshua Booth
-- Kaleb Bordner
-- Nick Rusali
-- Sherwin Shi
-- Xingmin Han
+## Project Mission
 
-# Project Mission
+Search and Rescue redesign of a NASA single aisle passenger aircraft to focus on efficiency and emissions reduction. Our mission requirements are shown below:
 
-Search and Rescue redesign of a NASA single aisle passenger aircraft to focus on efficiency and emissions reduction.
+<img width="800" height="400" alt="image" src="https://github.com/user-attachments/assets/7f931e05-7380-481d-867a-9a8e2d67c146" />
 
-# Analysis
+## Analysis
 
-Analysis scripts are housed in the SAR/ directory.
+primary analysis script resides in the `sardines` directory. running `SARDINE_optimization.py` will optimize an aircraft design and mission simultaneously, subject to provided assumptions and subdiscipline optimizations applied.
+
+## Results
+
+Our final optimized aircraft, which integrates the Propulsion, Mission Analysis, Mass/Cost, and Geometry subdisciplines allowed a 30% reduction in fuel burn relative to our baseline. We present this large increase in flight efficiency with some skepticism. Because we were fully reliant on the fidelity offered by the height_energy method for mission simulation, we suspect that our values are quite low. Additionally, our optimization is forward looking and optimistic in terms of future composite materials and their availability for our aircraft.
+
+The final, integrated and optimized trajectory of our flight plan is shown below.
+
+<img width="1500" height="1500" alt="integrated_mission_profile" src="https://github.com/user-attachments/assets/dcd51bb1-231d-40ae-a1db-dcbef05a3be3" />
+
+This resulted in a total mission fuel burn value of 12353 lbm, which represented a 30% reduction from our baseline. Additional details are available in our PDR, which is avaliable upon request.
 
 # Dependencies and Setup
 
-I'd recommend using a virtual environment defined by the tool `uv`, which is ideal for managing Python dependencies.
-
-You can find documentation for `uv` [here](https://docs.astral.sh/uv/). Look at the installation instructions for your operating system. Once `uv` is installed, you can clone this repository and install the dependencies with the "custom" update script by running:
-
+## Tooling
+We manage dependencies using [`uv`](https://docs.astral.sh/uv/). With `uv` installed, please run this update_submodules.sh script in the base directory.
 ```
 ./update_submodules.sh
 ```
+which will update various git submodules and install the dependencies for pyoptsparse and the IPOPT optimizer.
 
-on the command line.
-
-## Explanation of `update_submodules.sh`
-
-This just clones the Aviary submodule into your local repository so you can use it (and modify it if you want).
-
-Then it runs `uv sync` to install the dependencies defined in `pyproject.toml`. This .toml file points to the local Aviary submodule and uses it as a dependency, hence, why we need to clone it first.
-
-once this script is run once, you can then use the development branch of aviary in this virtual enviroment by importing it as needed. I recommend you run
-
-```
-aviary check
-```
-
-from the command line to ensure everything is working properly.
+## Acknowledgements and external tools
+- Aviary
+- PyOptSparse
+- IPOPT
+- FAST
