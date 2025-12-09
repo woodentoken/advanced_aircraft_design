@@ -15,8 +15,9 @@ The course focuses on the principles and practices of designing advanced aircraf
 ## Project Mission
 
 Search and Rescue redesign of a NASA single aisle passenger aircraft to focus on efficiency and emissions reduction. Our mission requirements are shown below:
-
-<img width="800" height="400" alt="image" src="https://github.com/user-attachments/assets/7f931e05-7380-481d-867a-9a8e2d67c146" />
+<p align="center">
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/7f931e05-7380-481d-867a-9a8e2d67c146" />
+</p>
 
 ## Analysis
 
@@ -27,8 +28,9 @@ primary analysis script resides in the `sardines` directory. running `SARDINE_op
 Our final optimized aircraft, which integrates the Propulsion, Mission Analysis, Mass/Cost, and Geometry subdisciplines allowed a 30% reduction in fuel burn relative to our baseline. We present this large increase in flight efficiency with some skepticism. Because we were fully reliant on the fidelity offered by the height_energy method for mission simulation, we suspect that our values are quite low. Additionally, our optimization is forward looking and optimistic in terms of future composite materials and their availability for our aircraft.
 
 The final, integrated and optimized trajectory of our flight plan is shown below.
-
-<img width="1500" height="1500" alt="integrated_mission_profile" src="https://github.com/user-attachments/assets/dcd51bb1-231d-40ae-a1db-dcbef05a3be3" />
+<p align="center">
+<img width="800" alt="integrated_mission_profile" src="https://github.com/user-attachments/assets/dcd51bb1-231d-40ae-a1db-dcbef05a3be3" />
+</p>
 
 This resulted in a total mission fuel burn value of 12353 lbm, which represented a 30% reduction from our baseline. Additional details are available in our PDR, which is avaliable upon request.
 
