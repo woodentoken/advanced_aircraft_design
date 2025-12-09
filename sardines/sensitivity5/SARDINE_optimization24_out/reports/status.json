@@ -1,0 +1,11 @@
+{
+ "Problem": "SARDINE_optimization24",
+ "Script": "SARDINE_optimization.py",
+ "Optimizer": "pyOptSparse_IPOPT",
+ "Number of driver iterations": 68,
+ "Number of model evals": 69,
+ "Number of deriv evals": 61,
+ "Wall clock run time": "00 hours 00 minutes 35 seconds 364.6 milliseconds",
+ "Exit status": "SUCCESS",
+ "Report generation date and time": "2025-12-08 22:12:27 "
+}

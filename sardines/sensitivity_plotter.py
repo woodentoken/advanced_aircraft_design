@@ -21,15 +21,15 @@ MARKER_MAP = {
 
 PAYLOAD_MARKERSIZE_MAP = {
     5000: 40,
-    10000: 60,
-    15000: 80,
+    10000: 80,
+    15000: 120,
 }
 
 
 def main():
     plot_run_data(
-        "sensitivity3/",
-        sensitivity_meta_data="sardine_sensitivity.csv",
+        "sensitivity5/",
+        sensitivity_meta_data="sardine_sensitivity5.csv",
         trajectory_file_name="mission_timeseries_data.csv",
     )
 
@@ -49,8 +49,8 @@ def make_color_map(color, vmin=15000, vmax=40000):
 
 
 # Example usage:
-BLUE_MAP = make_color_map("bone")
-RED_MAP = make_color_map("gist_heat", vmin=0.3, vmax=1.0)
+BLUE_MAP = make_color_map("gnuplot2", vmin=0, vmax=20000)
+RED_MAP = make_color_map("gist_heat", vmin=0.3, vmax=1)
 
 
 def plot_run_data(
@@ -107,7 +107,7 @@ def plot_run_data(
                 run_data["dataset"]["distance (m)"] * M2NM,
                 run_data["dataset"]["altitude (ft)"],
                 label="Altitude",
-                color=BLUE_MAP(run_data["metadata"]["cruise_alt"]),
+                color=BLUE_MAP(run_data["metadata"]["payload_total"]),
                 # linestyle=LINE_STYLE_MAP[item["metadata"]["cruise_mach"]],
                 # marker=MARKER_MAP[item["metadata"]["payload_total"]],
             )
@@ -115,7 +115,7 @@ def plot_run_data(
                 run_data["dataset"]["distance (m)"] * M2NM,
                 run_data["dataset"]["mach (unitless)"],
                 label="Mach",
-                color=BLUE_MAP(run_data["metadata"]["cruise_alt"]),
+                color=BLUE_MAP(run_data["metadata"]["payload_total"]),
                 # linestyle=LINE_STYLE_MAP[item["metadata"]["cruise_mach"]],
                 # marker=MARKER_MAP[item["metadata"]["payload_total"]],
             )
@@ -123,15 +123,38 @@ def plot_run_data(
                 run_data["dataset"]["distance (m)"] * M2NM,
                 run_data["dataset"]["drag (lbf)"],
                 label="Drag",
-                color=BLUE_MAP(run_data["metadata"]["cruise_alt"]),
+                color=BLUE_MAP(run_data["metadata"]["payload_total"]),
                 # linestyle=LINE_STYLE_MAP[item["metadata"]["cruise_mach"]],
                 # marker=MARKER_MAP[item["metadata"]["payload_total"]],
             )
+            # axes[2].legend(
+            #     title="cruise altitude (ft)", bbox_to_anchor=(1.05, 1), loc="upper left"
+            # )
+        from matplotlib.lines import Line2D
+
+        # After the plotting loop, before fig.show()
+        legend_payloads = [5000, 10000, 15000]
+
+        legend_elements = [
+            Line2D(
+                [0],
+                [0],
+                color=BLUE_MAP(p),
+                lw=3,
+                label=f"{p} lb payload",
+            )
+            for p in legend_payloads
+        ]
+
+        axes[2].legend(
+            handles=legend_elements,
+            title="Payload",
+            loc="upper right",
+        )
         axes[0].set_ylabel("altitude (ft)")
         axes[1].set_ylabel("Mach")
         axes[2].set_ylabel("drag (lb)")
         axes[2].set_xlabel("flown range (nmi)")
-        fig.suptitle("parametric optimized profiles")
 
         for ax in axes:
             ax.spines["top"].set_visible(False)
@@ -166,7 +189,6 @@ def plot_run_data(
                 label=f"M={mach}",
             )
 
-        fig.suptitle("flown range vs payload vs cruise mach vs cruise altitude")
         fig.savefig("plots/sensitivity_3d_plane.png", dpi=300)
 
     def plot_sensitivity_grids(metadata_df):
@@ -191,13 +213,17 @@ def plot_run_data(
             # Interpolate flown_range
             ZI = griddata((x[mask], y[mask]), z[mask], (XI, YI), method="cubic")
 
+            # breakpoint()
             # Plot heatmap
+            vmin, vmax = 2800, 4000
             im = ax.imshow(
                 ZI,
                 extent=(xi.min(), xi.max(), yi.min(), yi.max()),
                 origin="lower",
                 aspect="auto",
                 cmap="plasma",
+                vmin=vmin,
+                vmax=vmax,
             )
 
             ax.scatter(
@@ -209,8 +235,9 @@ def plot_run_data(
                 edgecolor="k",
             )
 
-            ax.set_title(f"payload = {m} lbm")
+            ax.set_title(f"payload = {m} lbm", fontsize=10)
             ax.set_xlabel("cruise mach")
+            ax.set_xticks([0.5, 0.6, 0.7])
             ax.set_ylabel("cruise altitude (ft)")
 
         axes[2].set_ylabel("")
@@ -219,8 +246,9 @@ def plot_run_data(
         # Add shared colorbar
         cbar = fig.colorbar(im, ax=axes.ravel().tolist())
         cbar.set_label("flown range (nmi)")
+        cbar.set_ticks([3000, 3500, 4000])
+        cbar.set_ticklabels(["3000", "3500", "4000"])
 
-        fig.suptitle("payload/range sensitivity per cruise mach")
         # fig.constraint_layout()
         plt.show()
         # fig.savefig("plots/sensitivity_grids.png", dpi=300)

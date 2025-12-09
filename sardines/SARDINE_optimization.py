@@ -33,7 +33,7 @@ OPTIMIZATIONS = [
     "geometry",
     "propulsion",
 ]  # options: mass, geometry, propulsion
-OPTIMIZATIONS = []  # no optimizations
+# OPTIMIZATIONS = []  # no optimizations
 
 # CONFIG
 DRIVER_TYPE = "IPOPT"
@@ -46,7 +46,7 @@ def main(
     run_SAR_baseline=False,
     run_SAR_optimized=True,  # optimizes mach and altitude
     run_sensitivity=False,
-    payload=6000,  # lb
+    payload=8000,  # lb
 ):
     summaries = []
     if run_ASA_unscaled:

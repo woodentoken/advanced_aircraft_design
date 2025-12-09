@@ -36,12 +36,14 @@ COLOR_DICT = {
 }
 
 LINE_COLOR_DICT = {
+    "integrated": "seagreen",
     "optimized": "green",
     "modified": "orange",
     "baseline": "blue",
 }
 
 LABEL_MAP = {
+    "integrated": "SARDINE",
     "optimized": "Optimized SAR",
     "modified": "SAR",
     "baseline": "ASA'",
@@ -75,9 +77,6 @@ def prep_plot():
 def plot_mission(phase_info, run_type, csv, md, fig=None, axes=None, plot_bounds=False):
     alt_bounds = {}
     mach_bounds = {}
-
-    # csvs = ["saved_runs/optimized_mission_timeseries_data.csv"]
-    # mds = ["saved_runs/optimized_mission_summary.md"]
 
     for key in phase_info.keys():
         alt_bounds[key] = (
@@ -127,11 +126,6 @@ def plot_mission(phase_info, run_type, csv, md, fig=None, axes=None, plot_bounds
             color=COLOR,
             label=LABEL,
         )
-        # axes[3].plot(
-        #     timeseries["time (s)"] / 3600,
-        #     -(timeseries["mass (kg)"] - timeseries["mass (kg)"][0]) * 2.2,
-        #     color=COLOR,
-        # )
 
         if plot_bounds:
             for key, start_time in phase_start_times.items():
@@ -200,7 +194,7 @@ def comparison(phase_info):
     fig, axes = prep_plot()
 
     # plots all three mission profiles on the same plot for comparison
-    for type in ["optimized", "modified", "baseline"]:
+    for type in ["integrated", "optimized", "modified", "baseline"]:
         print(f"Plotting {type} mission profile")
         csv = [f"saved_runs/{type}_mission_timeseries_data.csv"]
         md = [f"saved_runs/{type}_mission_summary.md"]
@@ -211,7 +205,7 @@ def comparison(phase_info):
 
 def individuals(phase_info):
     # plots individual mission profiles
-    for type in ["optimized", "modified", "baseline"]:
+    for type in ["integrated", "optimized", "modified", "baseline"]:
         print(f"Plotting {type} mission profile")
         csv = [f"saved_runs/{type}_mission_timeseries_data.csv"]
         md = [f"saved_runs/{type}_mission_summary.md"]
@@ -223,5 +217,5 @@ if __name__ == "__main__":
     del phase_info["pre_mission"]  # Remove pre_mission phase for plotting
     del phase_info["post_mission"]  # Remove post_mission phase for plotting
 
-    comparison(phase_info)
+    # comparison(phase_info)
     individuals(phase_info)
