@@ -1,7 +1,7 @@
+import csv
 import time
 from copy import deepcopy
 from itertools import product
-import csv
 
 import aviary.api as av
 import dymos as dm
@@ -12,15 +12,15 @@ import openmdao.api as om
 import polars as pl
 from rich import print
 
+from material_mix import MaterialMixMassCost
+from missions.archive.default_height_energy import phase_info as default_he
 from missions.basic import (
     generate_phase_info as generate_basic_SAR_profile,
 )
-from missions.archive.default_height_energy import phase_info as default_he
 from missions.optimization import (
     generate_phase_info as generate_SAR_profile,
 )
-from missions.sensitivity import phase_info as sensitivity_he
-
+from missions.sensitivity import phase_info as sensitivity_profile
 
 # FLOPS models
 base_ASA = "aircraft/baseline_ASA_10_crew.csv"
@@ -28,7 +28,7 @@ sardine_ASA = "aircraft/sardine_ASA_10_crew.csv"
 
 
 # DETERMINE WHICH OPTIMIZATIONS TO RUN
-OPTIMIZATIONS = ["geometry", "propulsion", "mass"]
+OPTIMIZATIONS = ["mass"]
 
 # CONFIG
 DRIVER_TYPE = "IPOPT"
@@ -112,7 +112,7 @@ def main(
 
     if run_sensitivity:
         print("[bold purple]Running sensitivity analysis...[/]")
-        sensitivity_analysis(sensitivity_he)
+        sensitivity_analysis(sensitivity_profile)
 
 
 class WingAreaFromAR(om.ExplicitComponent):
@@ -242,6 +242,36 @@ def run_analysis(
     print(f"Aspect ratio AR           = {AR_opt:.4f}")
     print(f"Thickness-to-chord (mean) = {tc:.4f}")
 
+    if "mass" in OPTIMIZATIONS:
+        x_al = prob.get_val("x_al")[0]
+        x_ts = prob.get_val("x_ts")[0]
+        x_2035 = prob.get_val("x_2035")[0]
+        mass_factor = prob.get_val("mass_factor")[0]
+        cost_factor = prob.get_val("cost_factor")[0]
+
+        print("\n=== Optimal material mix ===")
+        print(f"Aluminum fraction = {x_al:.3f}")
+        print(f"Thermoset CFRP fraction = {x_ts:.3f}")
+        print(f"2035 FRP fraction = {x_2035:.3f}")
+        print(f"Material mass factor = {mass_factor:.3f}")  # Between 0.5 & 1.0
+        print(
+            f"Material cost factor = {cost_factor:.3f}"
+        )  # Between MIN_MATERIAL_COST & MAX_MATERIAL_COST
+
+        print("\nStructural mass_scalers (applied to Aviary):")
+        print(
+            "Fuselage mass_scaler =", prob.get_val("aircraft:fuselage:mass_scaler")[0]
+        )
+        print("Wing mass_scaler =", prob.get_val("aircraft:wing:mass_scaler")[0])
+        print(
+            "Horizontal tail mass_scaler =",
+            prob.get_val("aircraft:horizontal_tail:mass_scaler")[0],
+        )
+        print(
+            "Vertical tail mass_scaler =",
+            prob.get_val("aircraft:vertical_tail:mass_scaler")[0],
+        )
+
     return summary
 
 
@@ -274,6 +304,56 @@ def configure_problem(
 
     model = prob.model
     prob.add_design_variables()
+
+    if "mass" in OPTIMIZATIONS:
+        # Default mass_scaler's
+        fus0 = model.aviary_inputs.get_item("aircraft:fuselage:mass_scaler")[0]
+        wing0 = model.aviary_inputs.get_item("aircraft:wing:mass_scaler")[0]
+        ht0 = model.aviary_inputs.get_item("aircraft:horizontal_tail:mass_scaler")[0]
+        vt0 = model.aviary_inputs.get_item("aircraft:vertical_tail:mass_scaler")[0]
+
+        # Material mix component
+        model.add_subsystem(
+            "material_mix",
+            MaterialMixMassCost(
+                fus_mass0=fus0,
+                wing_mass0=wing0,
+                ht_mass0=ht0,
+                vt_mass0=vt0,
+            ),
+            promotes_inputs=["x_al", "x_ts", "x_2035"],
+            promotes_outputs=[
+                "mass_factor",
+                "cost_factor",
+                "sum_fractions",
+                "fuselage_mass_scaler",
+                "wing_mass_scaler",
+                "horizontal_tail_mass_scaler",
+                "vertical_tail_mass_scaler",
+            ],
+        )
+
+        model.connect("fuselage_mass_scaler", "aircraft:fuselage:mass_scaler")
+        model.connect("wing_mass_scaler", "aircraft:wing:mass_scaler")
+        model.connect(
+            "horizontal_tail_mass_scaler", "aircraft:horizontal_tail:mass_scaler"
+        )
+        model.connect("vertical_tail_mass_scaler", "aircraft:vertical_tail:mass_scaler")
+
+        # Material percentages between 0 and 1
+        model.add_design_var("x_al", lower=0.0, upper=1.0)
+        model.add_design_var("x_ts", lower=0.0, upper=1.0)
+        model.add_design_var("x_2035", lower=0.0, upper=1.0)
+
+        # Fractions sum to 1
+        model.add_constraint("sum_fractions", equals=1.0)
+
+        # Cost base line (100% Aluminum): 1.0 + 1.0 = 2.0
+        MIN_MATERIAL_COST = 3.0  # User Defined, must >= 2.0
+        MAX_MATERIAL_COST = 3.5  # User defined, must >= MIN_MATERIAL_COST & <=3.5
+        model.add_constraint(
+            "cost_factor", lower=MIN_MATERIAL_COST, upper=MAX_MATERIAL_COST
+        )
 
     if "propulsion" in OPTIMIZATIONS:
         print("[bold green]Adding propulsion design variables...[/]")
@@ -425,7 +505,7 @@ def configure_problem(
     return prob
 
 
-def sensitivity_analysis(phase_info=sensitivity_he):
+def sensitivity_analysis(phase_info=sensitivity_profile):
     # sensitivity analysis over cruise altitude, cruise mach, and payload
     # will run a grid of cases and output results to a csv file
 
