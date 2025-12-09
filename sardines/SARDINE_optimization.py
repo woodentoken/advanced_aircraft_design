@@ -149,28 +149,34 @@ def sensitivity_analysis(phase_info=sensitivity_he):
         for climb_key in ["climb_1", "climb_3"]:
             if climb_key not in modified_phase_info:
                 continue
-            # del modified_phase_info[climb_key]["user_options"]["time_duration_bounds"]
-            modified_phase_info[climb_key]["user_options"]["altitude_final"] = (
-                cruise_alt,
-                "ft",
-            )
+            #     # del modified_phase_info[climb_key]["user_options"]["time_duration_bounds"]
+            #     modified_phase_info[climb_key]["user_options"]["altitude_final"] = (
+            #         cruise_alt,
+            #         "ft",
+            #     )
             modified_phase_info[climb_key]["user_options"]["altitude_bounds"] = (
                 (0, cruise_alt + 5000),
                 "ft",
             )
-            modified_phase_info[climb_key]["user_options"]["mach_final"] = (
-                cruise_mach,
-                "unitless",
-            )
+            if climb_key == "climb_3":
+                modified_phase_info[climb_key]["user_options"]["mach_final"] = (
+                    cruise_mach,
+                    "unitless",
+                )
+            if climb_key == "climb_1":
+                modified_phase_info[climb_key]["user_options"]["mach_final"] = (
+                    cruise_mach,
+                    "unitless",
+                )
 
-        # CRUISE 1
+        # # CRUISE 1
         for cruise_key in ["cruise_1", "cruise_3"]:
             if cruise_key not in modified_phase_info:
                 continue
             # del modified_phase_info[cruise_key]["user_options"]["target_distance"]
-            modified_phase_info[cruise_key]["user_options"]["mach_optimize"] = True
-            modified_phase_info[cruise_key]["user_options"]["altitude_optimize"] = True
-            # del modified_phase_info[cruise_key]["user_options"]["time_duration_bounds"]
+            #     modified_phase_info[cruise_key]["user_options"]["mach_optimize"] = True
+            #     modified_phase_info[cruise_key]["user_options"]["altitude_optimize"] = True
+            #     # del modified_phase_info[cruise_key]["user_options"]["time_duration_bounds"]
 
             modified_phase_info[cruise_key]["user_options"]["altitude_initial"] = (
                 cruise_alt,
@@ -184,9 +190,9 @@ def sensitivity_analysis(phase_info=sensitivity_he):
                 cruise_mach,
                 "unitless",
             )
-            modified_phase_info[cruise_key]["user_options"]["mach_polynomial_order"] = 1
+            #     modified_phase_info[cruise_key]["user_options"]["mach_polynomial_order"] = 1
             modified_phase_info[cruise_key]["user_options"]["mach_bounds"] = (
-                (cruise_mach - 0.2, cruise_mach + 0.2),
+                (cruise_mach - 0.1, cruise_mach + 0.1),
                 "unitless",
             )
             modified_phase_info[cruise_key]["user_options"]["altitude_final"] = (
@@ -198,19 +204,30 @@ def sensitivity_analysis(phase_info=sensitivity_he):
                 "ft",
             )
 
-        # DESCENT 1
-        for descent_key in ["descent_1"]:
+        # # DESCENT 1
+        for descent_key in ["descent_1", "descent_3"]:
             if descent_key not in modified_phase_info:
                 continue
-            # del modified_phase_info[descent_key]["user_options"]["time_duration_bounds"]
-            modified_phase_info[descent_key]["user_options"]["mach_initial"] = (
-                cruise_mach,
-                "unitless",
-            )
-            modified_phase_info[descent_key]["user_options"]["altitude_initial"] = (
-                cruise_alt,
-                "ft",
-            )
+            #     # del modified_phase_info[descent_key]["user_options"]["time_duration_bounds"]
+            #     modified_phase_info[descent_key]["user_options"]["mach_initial"] = (
+            #         cruise_mach,
+            #         "unitless",
+            #     )
+            #     modified_phase_info[descent_key]["user_options"]["altitude_initial"] = (
+            #         cruise_alt,
+            #         "ft",
+            #     )
+            if descent_key == "descent_3":
+                pass
+                # modified_phase_info[descent_key]["user_options"]["mach_initial"] = (
+                #     cruise_mach,
+                #     "unitless",
+                # )
+            if descent_key == "descent_1":
+                modified_phase_info[descent_key]["user_options"]["mach_initial"] = (
+                    cruise_mach,
+                    "unitless",
+                )
             modified_phase_info[descent_key]["user_options"]["altitude_bounds"] = (
                 (0, cruise_alt + 5000),
                 "ft",
@@ -218,12 +235,12 @@ def sensitivity_analysis(phase_info=sensitivity_he):
         return modified_phase_info
 
     cruise_alts = [20_000, 25_000, 30_000]
-    cruise_alts = cruise_alts[::-1]  # reverse for nicer output order
+    # cruise_alts = cruise_alts[::-1]  # reverse for nicer output order
     cruise_machs = [0.5, 0.6, 0.7]
     payloads = [
-        6_000,
-        12_000,
-        18_000,
+        5_000,
+        10_000,
+        15_000,
     ]
 
     iter_product = product(cruise_machs, cruise_alts, payloads)
