@@ -26,11 +26,13 @@ from missions.sensitivity import phase_info as sensitivity_he
 base_ASA = "aircraft/baseline_ASA_10_crew.csv"
 sardine_ASA = "aircraft/sardine_ASA_10_crew.csv"
 
+
+# DETERMINE WHICH OPTIMIZATIONS TO RUN
+OPTIMIZATIONS = ["geometry", "propulsion", "mass"]
+
 # CONFIG
 DRIVER_TYPE = "IPOPT"
 MAX_ITER = 200
-
-OPTIMIZATIONS = ["propulsion", "mass"]
 
 
 # change the defaults here to run different cases (you can run multiple cases in one go)
@@ -199,6 +201,25 @@ def run_analysis(
         "payload_total": payload_total,
     }
 
+    # post mission reporting
+    # propulsion variables
+    wing_locations = prob.get_val(av.Aircraft.Engine.WING_LOCATIONS)[0]
+    mass_scaler = prob.get_val(av.Aircraft.Engine.MASS_SCALER)[0]
+    scale_factor = prob.get_val(av.Aircraft.Engine.SCALE_FACTOR)[0]
+    engine_thrust = prob.get_val(av.Aircraft.Engine.SCALED_SLS_THRUST, units="lbf")[0]
+    thrust_to_weight = prob.get_val(av.Aircraft.Design.THRUST_TO_WEIGHT_RATIO)[0]
+    wing_loading = prob.get_val(av.Aircraft.Design.WING_LOADING, units="lbf/ft**2")
+    burned_fuel = prob.get_val(av.Mission.Summary.FUEL_BURNED, units="lb")[0]
+
+    # Propulsion print outs
+    print(f"Engine wing location :{wing_locations}")
+    print(f"Engine mass scaler :{mass_scaler}")
+    print(f"Engine scaler factor :{scale_factor}")
+    print(f"Engine thrust :{engine_thrust}")
+    print(f"Aircraft T/W :{thrust_to_weight}")
+    print(f"Wing Loading = {wing_loading} lbf/ft^2")
+    print(f"Fuel burned: {burned_fuel} lb")
+
     AR_opt = prob.get_val("aircraft:wing:aspect_ratio")[0]
     span = prob.get_val("aircraft:wing:span", units="ft")[0]
     area = prob.get_val("aircraft:wing:area", units="ft**2")[0]
@@ -253,6 +274,25 @@ def configure_problem(
 
     model = prob.model
     prob.add_design_variables()
+
+    if "propulsion" in OPTIMIZATIONS:
+        print("[bold green]Adding propulsion design variables...[/]")
+        # Propulsion design variables
+        prob.model.add_design_var(
+            av.Aircraft.Engine.WING_LOCATIONS, lower=0.1, upper=0.8, ref=0.25
+        )
+        prob.model.add_design_var(av.Aircraft.Engine.MASS_SCALER, lower=0.8, upper=1)
+        prob.model.add_design_var(
+            av.Aircraft.Engine.SCALE_FACTOR, lower=0.25, upper=2.0, ref=1.0
+        )
+
+        # Add constraints
+        # Constrain wing loading and thrust-to-weight ratio
+        prob.model.add_constraint(
+            av.Aircraft.Design.WING_LOADING, lower=60, units="lbf/ft**2"
+        )
+        prob.model.add_constraint(av.Aircraft.Engine.SCALED_SLS_THRUST, upper=22000)
+        prob.model.add_constraint(av.Aircraft.Design.THRUST_TO_WEIGHT_RATIO, upper=0.7)
 
     if "geometry" in OPTIMIZATIONS:
         print("[bold green]Adding geometry design variables...[/]")
@@ -352,7 +392,6 @@ def configure_problem(
             ref=2000,
             units="lbm",
         )
-
     elif optimization_mode == "fuel_burned":
         taxi_fuel_burn = 443  # lbm, estimate for fuel burned during taxi, this value comes from Balikrishnan's linear models
         # save at least 5% fuel for reserves
