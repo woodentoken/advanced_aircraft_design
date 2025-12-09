@@ -51,13 +51,11 @@ prob.model.add_design_var(
 prob.model.add_design_var(
     av.Aircraft.Engine.SCALE_FACTOR, lower=0.25, upper=2.0, ref=1.0
 )
-# prob.model.add_design_var(
-#     av.Aircraft.Engine.SCALED_SLS_THRUST, lower=15000, upper=25000, ref=20000
-# )
+
 
 # Add constraints
 # Constrain wing loading and thrust-to-weight ratio
-# prob.model.add_constraint(av.Aircraft.Design.WING_LOADING, lower = 60, units='lbf/ft**2')
+prob.model.add_constraint(av.Aircraft.Design.WING_LOADING, lower = 60, units='lbf/ft**2')
 prob.model.add_constraint(av.Aircraft.Engine.SCALED_SLS_THRUST, upper = 22000)
 prob.model.add_constraint(av.Aircraft.Design.THRUST_TO_WEIGHT_RATIO, upper = 0.7)
 
@@ -71,22 +69,23 @@ end_time = time.time()
 print(f"Total run time: {end_time - start_time} seconds")
 
 # post mission reporting
+# propulsion variables 
+wing_locations = prob.get_val(av.Aircraft.Engine.WING_LOCATIONS)[0]
+mass_scaler = prob.get_val(av.Aircraft.Engine.MASS_SCALER)[0]
+scale_factor = prob.get_val(av.Aircraft.Engine.SCALE_FACTOR)[0]
+engine_thrust = prob.get_val(av.Aircraft.Engine.SCALED_SLS_THRUST, units = 'lbf')[0]
+thrust_to_weight = prob.get_val(av.Aircraft.Design.THRUST_TO_WEIGHT_RATIO)[0]
+wing_loading = prob.get_val(av.Aircraft.Design.WING_LOADING, units="lbf/ft**2")
 burned_fuel = prob.get_val(av.Mission.Summary.FUEL_BURNED, units="lb")[0]
-mtow = prob.get_val(av.Mission.Summary.GROSS_MASS, units = "lb")[0]
-final_mass = prob.get_val(av.Mission.Summary.FINAL_MASS, units="lb")[0]
-wing_locations = prob.get_val(av.Aircraft.Engine.WING_LOCATIONS)
-mass_scaler = prob.get_val(av.Aircraft.Engine.MASS_SCALER)
-scale_factor = prob.get_val(av.Aircraft.Engine.SCALE_FACTOR)
-aspect_ratio = prob.get_val(av.Aircraft.Wing.ASPECT_RATIO)
-print(f"Fuel burned: {burned_fuel} lb")
-print(f"MTOW: {mtow} lb")
-print(f"Final mass: {final_mass} lb")
+
+# Propulsion print outs
 print(f"Engine wing location :{wing_locations}")
 print(f"Engine mass scaler :{mass_scaler}")
 print(f"Engine scaler factor :{scale_factor}")
-print("------------------------------------")
-print('\nConstraints\n-----------')
-print(f'Wing Loading = {prob.get_val(av.Aircraft.Design.WING_LOADING, units="lbf/ft**2")} lbf/ft^2')
-print(f'Thrust/Weight Ratio = {prob.get_val(av.Aircraft.Design.THRUST_TO_WEIGHT_RATIO)}')
+print(f"Engine thrust :{engine_thrust}")
+print(f"Aircraft T/W :{thrust_to_weight}")
+print(f'Wing Loading = {wing_loading} lbf/ft^2')
+print(f"Fuel burned: {burned_fuel} lb")
+
 
 
