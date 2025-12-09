@@ -83,10 +83,10 @@ aircraft:engine:num_wing_engines,2,unitless
 aircraft:engine:reference_mass,6293.8,lbm
 aircraft:engine:reference_sls_thrust,22200.5,lbf
 # aircraft:engine:scale_factor,0.9,unitless
-aircraft:engine:scale_mass,True,unitless
 aircraft:engine:scaled_sls_thrust,19980,lbf
-#aircraft:engine:subsonic_fuel_flow_scaler,1,unitless
-#aircraft:engine:supersonic_fuel_flow_scaler,1,unitless
+aircraft:engine:scale_mass,True,unitless
+# aircraft:engine:subsonic_fuel_flow_scaler,1,unitless
+# aircraft:engine:supersonic_fuel_flow_scaler,1,unitless
 aircraft:engine:wing_locations,0.289682918,unitless
 
 aircraft:fins:area,0,ft**2
@@ -116,7 +116,7 @@ aircraft:fuselage:max_width,14,ft
 aircraft:fuselage:military_cargo_floor,True,unitless
 aircraft:fuselage:num_fuselages,1,unitless
 aircraft:fuselage:passenger_compartment_length,60.0,ft
-aircraft:fuselage:wetted_area,3500.0,ft**2
+# aircraft:fuselage:wetted_area,3500.0,ft**2
 
 aircraft:horizontal_tail:area,250.0,ft**2
 aircraft:horizontal_tail:aspect_ratio,6.0,unitless
